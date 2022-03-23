@@ -14,20 +14,28 @@ notes.push(new Note({title:'Coffee with Joshua', content: 'This is an example no
 notes.push(new Note({title:'Coffee with Sarah', content:'This is an example note'}))
 notes.push(new Note({title:'The greatest achievement of humankind', content:'The earth is flat'}))
 
+//get all note
 
-app.get('/',function (req: Request, res: Response){
-
-
-
-    res.send('Get Hello World')
+app.get('/notes', (req:Request, res: Response)=>{
+    try{
+        res.status(200).send(notes)
+    }catch(e){
+        res.status(500).send(e)
+    }
 })
-app.post('/', function (req: Request, res: Response){
-
-
-
-
-    //console.log(req.body) //e.x. req.body.title
-    res.status(200).send('POST Hello World')
+//create new note
+app.post('/note',(req: Request, res: Response)=>{
+    try{
+        const note =new Note(req.body.note)
+        notes.push(note)
+        console.log(notes)
+    }catch{
+        res.send('error')
+    }
 })
+
+
+
+
 
 app.listen(3000)
