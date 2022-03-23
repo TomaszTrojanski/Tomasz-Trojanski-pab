@@ -1,10 +1,19 @@
-import express from 'express'
-import {Request, Response} from 'express'
-import {Note} from './note'
+import express from 'express';
+import e, {Request, Response} from 'express';
+import {Note, Tag} from './classes';
 
 const app = express()
-
 app.use(express.json())
+
+let notes: Note[]=[]
+let tags: Tag[]=[]
+
+//dummy data
+notes.push(new Note({title:'Pick up dry cleaning', content:'This is an example note'}))
+notes.push(new Note({title:'Coffee with Joshua', content: 'This is an example note'}))
+notes.push(new Note({title:'Coffee with Sarah', content:'This is an example note'}))
+notes.push(new Note({title:'The greatest achievement of humankind', content:'The earth is flat'}))
+
 
 app.get('/',function (req: Request, res: Response){
 
