@@ -85,7 +85,28 @@ app.delete('/note/:id',(req:Request, res:Response)=>{
         res.send('Cannot delete note of id: '+req.params.id)
     }
 })
+//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//TAGS//
 
+
+//get all tags
+app.get('/tags',(req:Request, res:Response)=>{
+    try{
+        res.status(200).send(tags)
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+//create new tag
+app.get('/tags',(req:Request, res:Response)=>{
+    try{
+        const tag = new Tag(req.body.tag)
+        tags.push(tag)
+        res.send(tag)
+        console.log(tags)
+    }catch{
+        res.send('error')
+    }
+})
 
 
 app.listen(3000)
