@@ -1,5 +1,6 @@
 import express from 'express';
 import e, {Request, Response} from 'express';
+import { rmSync } from 'fs';
 import {Note, Tag} from './classes';
 
 const app = express()
@@ -58,7 +59,32 @@ app.get('/note/:id',(req: Request, res:Response)=>{
         res.send('Cannot get note of id: '+req.params.id)
     }
 })
-
+//update a note
+app.put('/note/:id', (req: Request, res: Response)=>{
+    try{
+        let foundNote =notes.find(note => note.id === Number(req.params.id))
+        if(foundNote){
+            foundNote = new Note({...foundNote, ...req.body.note})
+            res.status(200).send(foundNote)
+        }else{
+            res.status(404).send('note not found')
+        }
+        console.log(notes)
+    }catch{
+        res.send('Cannot update note of id: '+req.params.id)
+    }
+})
+//delete a note
+app.delete('/note/:id',(req:Request, res:Response)=>{
+    try{
+        const index=notes.findIndex(note => note.id === Number(req.params.id))
+        notes.splice(index, 1)
+        res.send(notes)
+        console.log(notes)
+    }catch{
+        res.send('Cannot delete note of id: '+req.params.id)
+    }
+})
 
 
 
