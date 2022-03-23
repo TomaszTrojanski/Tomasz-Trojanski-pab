@@ -33,7 +33,31 @@ app.post('/note',(req: Request, res: Response)=>{
         res.send('error')
     }
 })
-
+//create new note in bulk
+app.post('/notes', (req:Request, res: Response)=>{
+    try{
+        const reqNotes: Note[] = req.body.notes;
+        reqNotes.map(note=>{
+            notes.concat(new Note(note))
+            res.status(200).send(notes)
+        })
+    }catch(e){
+        res.status(500).send(e)
+    }
+})
+//get note by id
+app.get('/note/:id',(req: Request, res:Response)=>{
+    try{
+        const note = notes.find(note => note.id === Number(req.params.id))
+        if(note){
+            res.status(200).send(note)
+        }else{
+            res.status(400).send('note not found')
+        }
+    }catch{
+        res.send('Cannot get note of id: '+req.params.id)
+    }
+})
 
 
 
