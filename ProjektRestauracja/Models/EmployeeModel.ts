@@ -1,4 +1,4 @@
-class EmployeeModel{
+class Employee{
     name: string;
     surname: string;
     position: string;
@@ -9,4 +9,4 @@ class EmployeeModel{
         this.position = position;
     }
 }
-export default EmployeeModel;
+export default Employee;

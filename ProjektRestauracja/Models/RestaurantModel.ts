@@ -1,4 +1,4 @@
-class RestaurantModel{
+class Restaurant{
     name: string;
     address: string;
     phone: string;
@@ -15,4 +15,4 @@ class RestaurantModel{
         this.website = website;
     }
 }
-export default RestaurantModel;
+export default Restaurant;
