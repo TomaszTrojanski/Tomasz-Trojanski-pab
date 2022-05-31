@@ -4,7 +4,7 @@ import Customer from "../Core/CustomerModel";
 export class CustomerRepository{
     customerSchema = new Schema<Customer>(
         {
-            customretId: {type: Number, required: true},
+            customerId: {type: Number, required: true},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},

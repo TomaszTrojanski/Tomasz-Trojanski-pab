@@ -1,5 +1,5 @@
 class Customer{
-    customretId: Number;
+    customerId: Number;
     name: string;
     email: string;
     phone: string;
@@ -7,7 +7,7 @@ class Customer{
     loyaltyPoints: number;
 
     constructor(customerId: number,name: string, email: string, phone: string, address: string){
-        this.customretId = customerId;
+        this.customerId = customerId;
         this.name = name;
         this.email = email;
         this.phone = phone;
