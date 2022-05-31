@@ -2,16 +2,18 @@ import Table from "./TablesModel";
 import Customer from "./CustomerModel";
 
 class Reservation{
-    table: Table;
+    reservationId: number;
+    tableNumber: number;
     startDateTime: Date;
     endDateTime: Date;
-    customer: Customer;
+    customerId:Number;
 
-    constructor(table: Table, startDateTime: Date, endDateTime: Date, customer: Customer){
-        this.table = table;
+    constructor(reservationId: Number,table: Table, startDateTime: Date, endDateTime: Date, customerID: Number){
+        this.reservationId = reservationId;
+        this.tableNumber = table.tableNumber;
         this.startDateTime = startDateTime;
         this.endDateTime = endDateTime;
-        this.customer = customer;
+        this.customerId = customer.customerId;
     }
 }
 export default Reservation;

@@ -4,6 +4,7 @@ import Customer from "../Core/CustomerModel";
 export class CustomerRepository{
     customerSchema = new Schema<Customer>(
         {
+            customretId: {type: Number, required: true},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},
@@ -18,12 +19,14 @@ export class CustomerRepository{
 
         const customers =[
             {
+                customretId: 1,
                 name: 'Customer',
                 email: 'customer@gmail.com',
                 phone: '123456789',
                 address: 'ul. Adres',
                 loyaltyPoints: 0
 },{
+                customretId: 2,
                 name: 'Customer2',
                 email: 'customre2@gmail.com',
                 phone: '123456782',
