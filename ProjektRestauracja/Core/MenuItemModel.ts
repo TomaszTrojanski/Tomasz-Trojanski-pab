@@ -8,14 +8,6 @@ enum Type
     Drink,
     Dessert
 }
-enum Unit
-{
-    Piece,
-    Kg,
-    L,
-    ml,
-    g
-}
 class MenuItem{
     name: string;
     price: number;
