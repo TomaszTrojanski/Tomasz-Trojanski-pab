@@ -95,5 +95,23 @@ export class CustomerRepository{
             console.log(err);
         });
     }
+    async addLoyaltyPoints(customerName: string, points: number):Promise<void>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        let customer = await this.CustomerModel.findOne({name: customerName});
+        if(customer)
+        {
+            customer.loyaltyPoints += points;
+            await this.CustomerModel
+            .updateOne({name: customer.name}, customer)
+            .then(function(){
+                console.log('Customer has been updated')}
+            ).catch(function(err){
+                console.log(err);
+            });
+        }  else{
+            console.log('Customer does not exist');
+        }
 }
         
