@@ -7,7 +7,7 @@ class Restaurant{
     website: string;
     description?: string;
 
-    constructor(name: string, address: string, phone: string, nip: string, email: string, website: string, description?: string;){
+    constructor(name: string, address: string, phone: string, nip: string, email: string, website: string, description?: string){
         this.name = name;
         this.address = address;
         this.phone = phone;
