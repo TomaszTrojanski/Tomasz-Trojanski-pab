@@ -79,7 +79,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .insertMany(restaurants)
                                 .then(function () {
-                                console.log('Restaurants have benn populated');
+                                console.log('Restaurants"+restaurant.name+" have benn populated');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -100,7 +100,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .create(restaurant)
                                 .then(function () {
-                                console.log('Restaurant has been added');
+                                console.log('Restaurant"+restaurant.name+" has been added');
                             })];
                     case 2:
                         _a.sent();
@@ -141,7 +141,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
-                                console.log('Restaurant has been deleted');
+                                console.log('Restaurant "+restaurant.name+"has been deleted');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
