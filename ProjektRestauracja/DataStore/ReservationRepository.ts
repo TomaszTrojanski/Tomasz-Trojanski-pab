@@ -48,7 +48,7 @@ export class RestaurantRepository
         await this.ReservationModel
         .create(reservation)
         .then(function(){
-            console.log('Reservation"+reservation.reservationId+"has been added')}
+            console.log("Reservation"+reservation.reservationId+"has been added")}
         ).catch(function(err){
             console.log(err);
         });
@@ -59,7 +59,7 @@ export class RestaurantRepository
         await this.ReservationModel
         .deleteOne({reservationId: reservationId})
         .then(function(){
-            console.log('Reservation"+reservationId+"has been deleted')}
+            console.log("Reservation"+reservationId+"has been deleted")}
         ).catch(function(err){
             console.log(err);
         });
@@ -87,7 +87,7 @@ export class RestaurantRepository
         await this.ReservationModel
         .updateOne({reservationId: reservation.reservationId}, reservation)
         .then(function(){
-            console.log('Reservation"+reservation.reservationId+"has been updated')}
+            console.log("Reservation"+reservation.reservationId+"has been updated")}
         ).catch(function(err){
             console.log(err);
         });

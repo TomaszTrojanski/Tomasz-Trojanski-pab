@@ -51,7 +51,7 @@ export class TableRepository
         await this.TableModel
         .create(table)
         .then(function(){
-            console.log('Table"+table.tableNumber+"has been added')}
+            console.log("Table"+table.tableNumber+"has been added")}
         ).catch(function(err){
             console.log(err);
         });
@@ -62,7 +62,7 @@ export class TableRepository
         await this.TableModel
         .deleteOne({tableNumber: tableNumber})
         .then(function(){
-            console.log('Table"+{tableNumber}+" has been deleted')}
+            console.log("Table"+{tableNumber}+" has been deleted")}
         ).catch(function(err){
             console.log(err);
         });
@@ -90,7 +90,7 @@ export class TableRepository
             await this.TableModel
             .updateOne({tableNumber: table.tableNumber}, {$set: {status: table.status}})
             .then(function(){
-                console.log('Table"+{tableNumber}+" has been updated')}
+                console.log("Table"+{tableNumber}+" has been updated")}
             ).catch(function(err){
                 console.log(err);
             });

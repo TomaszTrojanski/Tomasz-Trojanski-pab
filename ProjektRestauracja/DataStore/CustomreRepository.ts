@@ -50,7 +50,7 @@ export class CustomerRepository{
         await this.CustomerModel
         .create(customer)
         .then(function(){
-            console.log('Customer"+customer.name+"has been added')}
+            console.log("Customer"+customer.name+"has been added")}
         ).catch(function(err){
             console.log(err);
         });
@@ -62,7 +62,7 @@ export class CustomerRepository{
         await this.CustomerModel
         .deleteOne({name: customerName})
         .then(function(){
-            console.log('Customer"+customer.name+" has been deleted')}
+            console.log("Customer"+customer.name+" has been deleted")}
         ).catch(function(err){
             console.log(err);
         });
@@ -93,7 +93,7 @@ export class CustomerRepository{
         await this.CustomerModel
         .updateOne({name: customer.name}, customer)
         .then(function(){
-            console.log('Customer"+customer.name+" has been updated')}
+            console.log("Customer"+customer.name+" has been updated")}
         ).catch(function(err){
             console.log(err);
         });
@@ -109,11 +109,11 @@ export class CustomerRepository{
             await this.CustomerModel
             .updateOne({name: customer.name}, customer)
             .then(function(){
-                console.log('Customer"+customer.name+" has been updated')}
+                console.log("Customer"+customer.name+" has been updated")}
             ).catch(function(err){
                 console.log(err);
             });
         }  else{
-            console.log('Customer"+customer.name+" does not exist');
+            console.log("Customer"+customer.name+" does not exist");
         }
 }}

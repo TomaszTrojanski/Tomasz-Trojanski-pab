@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-var Restaurant = /** @class */ (function () {
+var Restaurant = /** @class */ (function() {
     function Restaurant(name, address, phone, nip, email, website, description) {
         this.name = name;
         this.address = address;
