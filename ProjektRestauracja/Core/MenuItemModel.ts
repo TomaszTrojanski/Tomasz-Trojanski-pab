@@ -16,7 +16,7 @@ enum Unit
     ml,
     g
 }
-class MenuPosition{
+class MenuItem{
     name: string;
     price: number;
     type: Type;
@@ -31,4 +31,4 @@ class MenuPosition{
         this.product = product;
     }
 }
-export default MenuPosition;
+export default MenuItem;
