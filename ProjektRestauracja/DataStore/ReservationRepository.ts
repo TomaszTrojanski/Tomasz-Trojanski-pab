@@ -92,4 +92,9 @@ export class RestaurantRepository
             console.log(err);
         });
     }
+    async reservationPerCustomer(customerId: number):Promise<Reservation[]>{
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        return await this.ReservationModel.find({customerId: customerId});
+    }
 }

@@ -92,4 +92,14 @@ async getRestaurantByName(restaurantName:string):Promise<Restaurant> {
             return null as any;
         }
     }
+    async CheckIfRestaurantExists(restaurantName:string):Promise<boolean> {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        let restaurant = await this.RestaurantModel.findOne({name: restaurantName});
+        if (restaurant)
+        {
+            return true;
+        }else {
+            return false;
+        }
+    }
 }
