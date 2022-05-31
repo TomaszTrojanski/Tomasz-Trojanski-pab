@@ -1,18 +1,27 @@
 import {Schema, model, connect} from 'mongoose';
+import { type } from 'os';
 import Restaurant from '../Core/RestaurantModel';
-const restaurandSchema = new Schema<Restaurant>({
-    name: {type: String, required: true},
-    address: {type: String, required: true},
-    phone: {type: String, required: true},
-    nip: {type: String, required: true},
-    email: {type: String, required: true},
-    website: {type: String, required: true},
-    description: String});
 
-const RestaurantModel = model<Restaurant>('Restaurant', restaurandSchema);
 
-async function populateRestaurants(){
-    await connect('ConnectionString');
+export class RestaurantRepository
+{
+    restaurantSchema = new Schema<Restaurant>(
+        {
+            name: {type: String, required: true},
+            address: {type: String, required: true},
+            phone: {type: String, required: true},
+            nip: {type: String, required: true},
+            email: {type: String, required: true},
+            website: {type: String, required: true},
+            description: String
+        });
+    RestaurantModel = model<Restaurant>('Restaurant', this.restaurantSchema);
+
+
+
+async populateRestaurants()
+{
+    await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
     const restaurants =[
         {
@@ -29,9 +38,8 @@ async function populateRestaurants(){
             nip: '123456782',
             email: 'resem2@gmail.com',
             website: 'www.restauracja2.pl',
-        }
-    ];
-    await RestaurantModel
+        }];
+    await this.RestaurantModel
     .insertMany(restaurants)
     .then(function(){
         console.log('Restaurants have benn populated')
@@ -39,33 +47,26 @@ async function populateRestaurants(){
     console.log(err);
 });
 }
-async function addRestaurant(restaurant: Restaurant):Promise<void> {
-    await RestaurantModel
+
+async addRestaurant(restaurant: Restaurant):Promise<void> 
+{
+    await this.RestaurantModel
     .create(restaurant)
     .then(function(){
         console.log('Restaurant has been added')});
 }
-async function getRestaurant():Promise<Restaurant[]> {
+async getRestaurant():Promise<Restaurant[]> {
     let restaurants: Restaurant[];
-    await RestaurantModel
+    await this.RestaurantModel
     .find()
     .then(function(res){
         restaurants=res;});
 
     return restaurants;
 }
-async function deleteRestaurantByName(restaurantName:string):Promise<void> {
-    await RestaurantModel
+async deleteRestaurantByName(restaurantName:string):Promise<void> {
+    await this.RestaurantModel
     .deleteOne({name: restaurantName})
     .then(function(){
         console.log('Restaurant has been deleted')});
-}
-    async function getRestaurantByName(restaurantName:string):Promise<Restaurant> {
-        let restaurant: Restaurant;
-        await RestaurantModel
-        .findOne({name: restaurantName})
-        .then(function(res){
-            restaurant=res;});
-
-        return restaurant;
-    }
+}}
