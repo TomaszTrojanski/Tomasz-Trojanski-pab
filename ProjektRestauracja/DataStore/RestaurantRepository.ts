@@ -42,7 +42,7 @@ async populateRestaurants() : Promise<void>
     await this.RestaurantModel
     .insertMany(restaurants)
     .then(function(){
-        console.log('Restaurants have benn populated')
+        console.log('Restaurants"+restaurant.name+" have benn populated')
 }).catch(function(err){
     console.log(err);
 });
@@ -56,7 +56,7 @@ async addRestaurant(restaurant: Restaurant):Promise<void>
     await this.RestaurantModel
     .create(restaurant)
     .then(function(){
-        console.log('Restaurant has been added')});
+        console.log('Restaurant"+restaurant.name+" has been added')});
 }
 async getRestaurant():Promise<Restaurant[]> {
     await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
@@ -76,7 +76,7 @@ async deleteRestaurantByName(restaurantName:string):Promise<void> {
     await this.RestaurantModel
     .deleteOne({name: restaurantName})
     .then(function(){
-        console.log('Restaurant has been deleted')}).catch(function(err){
+        console.log('Restaurant "+restaurant.name+"has been deleted')}).catch(function(err){
             console.log(err);
         });
 }
