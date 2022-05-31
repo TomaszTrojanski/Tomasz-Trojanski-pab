@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const [Restaurant] = require('./CoreBusiness/RestaurantModel');
-import express = require ('express');
+import bodyParser from 'body-parser';
+import express from 'express';
 import {Request, Response} from 'express';
 import { RestaurantRepository } from "./DataStore/RestaurantRepository";
 
