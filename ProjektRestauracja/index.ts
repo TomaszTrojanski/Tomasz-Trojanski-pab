@@ -11,7 +11,7 @@ const {Table} = require('./Core/TablesModel');
 import bodyParser from 'body-parser';
 import express from 'express';
 import {Request, Response} from 'express';
-import { CustomerRepository } from './DataStore/CustomreRepository';
+import { CustomerRepository } from './DataStore/CustomerRepository';
 import { EmployeeRepository } from './DataStore/EmployeeRepository';
 import { MenuItemRepository } from './DataStore/MenuItemRepository';
 import { ProductRepository } from './DataStore/ProductRepository';
