@@ -60,7 +60,7 @@ export class CustomerRepository{
             console.log(err);
         });
     }
-    async deleteCustomer(customerName: string):Promise<void>
+    async deleteCustomerByName(customerName: string):Promise<void>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 

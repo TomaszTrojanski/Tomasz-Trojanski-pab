@@ -44,7 +44,7 @@ productDemandListRepository.populateProductDemandList();
 // REST API for Customer
 // get all customers
 router.get('/customers', async (_req: Request, res: Response) => {
-    await customerRepository.getCustomers()
+    await customerRepository.getCustomer()
     .then(function(customers: any)
     {
         if(customers)
