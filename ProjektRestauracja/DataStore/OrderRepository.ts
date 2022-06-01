@@ -1,36 +1,127 @@
 import { Schema, model,connect } from "mongoose";
-import { freemem } from "os";
+import Product from "../Core/ProductModel";
+import MenuItem from "../Core/MenuItemModel";
 import Order from "../Core/OrderModel";
+import Employee from "../Core/EmployeeModel";
+import Table from "../Core/TablesModel";
+import Restaurant from "../Core/RestaurantModel";
 
-export class OrderRepository{
-    orderSchema = new Schema<Order>({
-            employee: {type: Schema.Types.ObjectId, ref: 'Employee'},
-            items: [{type: Schema.Types.ObjectId, ref: 'MenuItem'}],
+export class OrderRepository
+{
+    restaurantSchema = new Schema<Restaurant>({
+        name: {type: String, required: true},
+        address: {type: String, required: true},
+        phone: {type: String, required: true},
+        nip: {type: String, required: true},
+        email: {type: String, required: true},
+        website: {type: String, required: true},
+        description: {type: String, required: false}
+    });
+
+    employeeSchema = new Schema<Employee>({
+        name: {type: String, required: true},
+        surname: {type: String, required: true},
+        position: {type: String, required: true},
+        restaurant: {type: this.restaurantSchema, ref: 'Restaurant'}
+    });
+
+    productSchema = new Schema<Product>({
+        name: {type: String, required: true},
+        price: {type: Number, required: true},
+        quantity: {type: Number, required: true}
+    });
+
+    menuItemSchema = new Schema<MenuItem>({
+        name: {type: String, required: true},
+        price: {type: Number, required: true},
+        description: {type: String, required: false},
+        products: [{type:this.productSchema, ref: 'Product'}]
+    });
+    
+    tableSchema = new Schema<Table>({
+        number: {type: Number, required: true},
+        seats: {type: Number, required: true},
+        status: {type: Number, required: true}
+    });
+    
+    orderSchema = new Schema<Order>(
+        {
+            dateTime: {type: Date, required: true},
+            employee: {type: this.employeeSchema, ref: 'Employee'},
+            items: [{type: this.menuItemSchema, ref: 'MenuItem'}],
             status: {type: Number, required: true},
-            table: {type: Schema.Types.ObjectId, ref: 'Table'},
+            table: {type: this.tableSchema, ref: 'Table'},
             price: {type: Number, required: true}
         });
+
     OrderModel = model<Order>('Order', this.orderSchema);
 
-    async populateOrders() : Promise<void>{
+    async populateOrders() : Promise<void>
+    {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
         const orders = [
             {
-                employee: '62826aff5986dcfe48d66dd4',
-                items: [
-                    '6283fc51124f7b21d9c97d61',
-                    '6283fc51124f7b21d9c97d65'
+                dateTime: new Date(),
+                employee: 
+                {
+                    name: "Employee2",
+                    surname: "Employee2",
+                    position: "Waiter",
+                    restaurant: 
+                    {
+                        name: "Restaurant1",
+                        address: "Address1",
+                        phone: "123456789",
+                        nip: "123456789",
+                        email: "someEmail@something.com",
+                        website: "someWebsite.com",
+                    }
+                },
+                items: 
+                [
+                    {
+                        name: "Coca_Cola",
+                        price: 5,
+                        type: 3,
+                        description: "Coca Cola can",
+                        products: 
+                        [
+                            {
+                                name: "Coca_Cola_Can",
+                                price: 2.5,
+                                quantity: 1
+                            }
+                        ]
+                    },
+                    {
+                        name: "Chicken_Nuggets",
+                        price: 30,
+                        type: 1,
+                        description: "Chicken nuggets",
+                        products:
+                        [
+                            {
+                                name: "Chicken",
+                                price: 3,
+                                quantity: 2
+                            }
+                        ]
+                    }
                 ],
                 status: 1,
-                table: '6284ab720b1b925fc9c801fe',
+                table: 
+                {
+                    number: 1,
+                    seats: 4,
+                    status: 0
+                },
                 price: 35
             }
         ];
 
-        if (await this.orderModel.countDocuments() === 0)
+        if (await this.OrderModel.countDocuments() === 0)
         {
-            await this.orderModel
+            await this.OrderModel
             .insertMany(orders)
             .then(function()
             {
@@ -42,7 +133,7 @@ export class OrderRepository{
         }
     };
 
-    async addOrder(order: Order) : Promise<void>
+    async addOrder(order: Order) : Promise<boolean | string>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
