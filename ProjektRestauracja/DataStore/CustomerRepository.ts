@@ -91,17 +91,37 @@ export class CustomerRepository{
             return null as any;
         }
     }
-    async updateCustomer(customer: Customer):Promise<void>
+    async updateCustomer(customerName:string,customer: Customer):Promise<void>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        await this.CustomerModel
-        .updateOne({name: customer.name}, customer)
-        .then(function(){
-            console.log("Customer"+customer.name+" has been updated")}
-        ).catch(function(err: any){
-            console.log(err);
-        });
+        let customerToUpdate = await this.CustomerModel.findOne({name: customerName});
+        if (customerToUpdate)
+        {
+            if(customer.name)
+                customerToUpdate.name = customer.name;
+            if(customer.email)
+                customerToUpdate.email = customer.email;
+            if(customer.phone)
+                customerToUpdate.phone = customer.phone;
+            if(customer.address)
+                customerToUpdate.address = customer.address;
+            if(customer.loyaltyPoints)
+                customerToUpdate.loyaltyPoints = customer.loyaltyPoints;
+            await customerToUpdate.save()
+            .then(function()
+            {
+                console.log("Customer " + customerName + " has been updated!");
+            }
+            ).catch(function(err: any)
+            {
+                console.log(err);
+            });
+        }
+        else
+        {
+            console.log("Customer " + customerName + " does not exist!");
+        }
     }
     async addLoyaltyPoints(customerName: string, points: number):Promise<void>
     {
