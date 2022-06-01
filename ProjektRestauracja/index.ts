@@ -9,6 +9,7 @@ import { RestaurantRepository } from './DataStore/RestaurantRepository';
 import { ReservationRepository } from './DataStore/ReservationRepository';
 import { TableRepository } from './DataStore/TableRepository';
 import { OrderRepository } from './DataStore/OrderRepository';
+import { ProductDemandListRepository } from './DataStore/ProductDemandListRepository';
 
 const app = express();
 const router = express.Router();
@@ -76,7 +77,7 @@ router.get('/customer/:name', async (req: Request, res: Response) => {
 router.post('/customer', async (req: Request, res: Response) => {
     const customer = req.body;
     await customerRepository.addCustomer(customer)
-    .then(function(customerAdded: boolean)
+    .then(function(customerAdded: any)
     {
         if(customerAdded)
             res.status(201).send("Customer " + customer.name + " has been successfully added.");
@@ -91,7 +92,7 @@ router.post('/customer', async (req: Request, res: Response) => {
 // delete customer by name
 router.delete('/customer/:name', async (req: Request, res: Response) => {
     await customerRepository.deleteCustomerByName(req.params.name)
-    .then(function(customerDeleted: boolean)
+    .then(function(customerDeleted: any)
     {
         if(customerDeleted)
             res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
@@ -106,7 +107,7 @@ router.delete('/customer/:name', async (req: Request, res: Response) => {
 // update customer from request body
 router.put('/customer/:name', async (req: Request, res: Response) => {
     await customerRepository.updateCustomer(req.params.name, req.body)
-    .then(function(customerUpdated: boolean)
+    .then(function(customerUpdated: any)
     {
         if(customerUpdated)
             res.status(200).send("Customer " + req.params.name + " has been successfully updated.");
@@ -121,7 +122,7 @@ router.put('/customer/:name', async (req: Request, res: Response) => {
 // add loyalty points to customer
 router.put('/customer/:name/:loyaltyPoints', async (req: Request, res: Response) => {
     await customerRepository.addLoyaltyPoints(req.params.name, +req.params.loyaltyPoints)
-    .then(function(loyaltyPointsAdded: boolean)
+    .then(function(loyaltyPointsAdded: any)
     {
         if(loyaltyPointsAdded)
             res.status(200).send(req.params.loyaltyPoints + " loyalty points to " + req.params.name + ".");
@@ -246,7 +247,7 @@ router.get('/menuItem/:name', async (req: Request, res: Response) => {
 router.post('/menuItem', async (req: Request, res: Response) => {
     const menuItem = req.body;
     await menuItemRepository.addMenuItem(menuItem)
-    .then(function(menuItemAdded: boolean)
+    .then(function(menuItemAdded: any)
     {   
         if(menuItemAdded)
             res.status(201).send("Menu Item " + menuItem.name + " has been successfully added.");
@@ -261,7 +262,7 @@ router.post('/menuItem', async (req: Request, res: Response) => {
 // delete menu item by name
 router.delete('/menuItem/:name', async (req: Request, res: Response) => {
     await menuItemRepository.deleteMenuItemByName(req.params.name)
-    .then(function(menuItemDeleted: boolean)
+    .then(function(menuItemDeleted: any)
     {
         if(menuItemDeleted)
             res.status(200).send("Menu Item " + req.params.name + " has been successfully deleted.");
@@ -276,7 +277,7 @@ router.delete('/menuItem/:name', async (req: Request, res: Response) => {
 // update menu item from request body
 router.put('/menuItem/:name', async (req: Request, res: Response) => {
     await menuItemRepository.updateMenuItem(req.params.name, req.body)
-    .then(function(menuItemUpdated: boolean)
+    .then(function(menuItemUpdated: any)
     {
         if(menuItemUpdated)
             res.send("Menu Item " + req.params.name + " has been successfully updated.");
@@ -448,7 +449,7 @@ router.get('/orders/table/:tableNumber', async (req: Request, res: Response) => 
 // REST API for Product in Storage
 // get all products
 router.get('/products', async (_req: Request, res: Response) => {
-    await productRepository.getProducts()
+    await productRepository.getProduct()
     .then(function(products: any)
     {
         if(products)
@@ -722,7 +723,7 @@ router.get('/reservations/table/:number', async (req: Request, res: Response) =>
 // REST API for Restaurant
 // get all restaurants
 router.get('/restaurants', async (_req: Request, res: Response) => {
-    await restaurantRepository.getRestaurants()
+    await restaurantRepository.getRestaurant()
     .then(function(restaurants: any)
     {
         if(restaurants)
