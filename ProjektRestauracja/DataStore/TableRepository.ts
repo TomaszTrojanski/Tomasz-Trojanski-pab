@@ -1,5 +1,7 @@
 import { Schema, model, connect } from "mongoose";
 import Table from "../Core/TablesModel";
+import Reservation from '../Core/ReservationModel';
+import {ReservationRepository} from './ReservationRepository';
 
 export class TableRepository
 {
@@ -48,50 +50,84 @@ export class TableRepository
     }
     }
 
-    async addTable(table: Table):Promise<void>
+    async addTable(table: Table) : Promise<boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
         
+        const alreadyExists = await this.TableModel.findOne({number: table.number});
+        if(alreadyExists)
+            return false;
+
         await this.TableModel
         .create(table)
-        .then(function(){
-            console.log("Table"+table.number+"has been added")}
-        ).catch(function(err:any){
+        .then(function()
+        {
+            console.log("Table " + table.number + " has been added!");
+        }
+        ).catch(function(err: any)
+        {
             console.log(err);
         });
+
+        const existsAfter = await this.TableModel.findOne({number: table.number});
+        if (existsAfter)
+            return true;
+        else
+            return false;
     }
-    async deleteTableByNumber(tableNumber: number):Promise<void>{
+
+    async deleteTableByNumber(tableNumber: number) : Promise<boolean>
+    {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        
+        const exists = await this.TableModel.exists({number: tableNumber});
+        if (!exists)
+            return false;
 
         await this.TableModel
         .deleteOne({number: tableNumber})
-        .then(function(){
-            console.log("Table"+tableNumber+" has been deleted")}
-        ).catch(function(err:any){
+        .then(function()
+        {
+            console.log("Table " + tableNumber + " has been deleted!");
+        }).catch(function(err: any)
+        {
             console.log(err);
         });
+
+        const existsAfter = await this.TableModel.exists({number: tableNumber});
+        if (!existsAfter)
+            return true;
+        else
+            return false;
     }
-    async getTableByNumber(tableNumber:number):Promise<Table>{
+
+    async getTableByNumber(tableNumber: number) : Promise<Table | boolean>
+    {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        let table = await this.TableModel.findOne({number: tableNumber});
-        if(table)
-        {
-            
+        
+        const table = await this.TableModel.findOne({number: tableNumber});
+        if (table)
             return table;
-        }
-        else{
-            return null as any;
-        }}
-        async getTable(table: Table):Promise<Table[]>{
-            await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        else
+            return false;
+    }
 
-            return await this.TableModel.find();
-        }
-        async updateTableByNumber(tableNumber:number, table:Table):Promise<void>{
-            await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+    async getTables() : Promise<Table[] | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        
+        const tables = await this.TableModel.find({});
+        if (tables.length > 0)
+            return tables;
+        else
+            return false;
+    }
 
-            let tableToUpdate = await this.TableModel.findOne({number: tableNumber});
+    async updateTableByNumber(tableNumber:number, table: Table) : Promise<boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        
+        let tableToUpdate = await this.TableModel.findOne({number: tableNumber});
         if (tableToUpdate)
         {
             if(table.number)
@@ -100,7 +136,9 @@ export class TableRepository
                 tableToUpdate.seats = table.seats;
             if(table.status)
                 tableToUpdate.status = table.status;
-            await tableToUpdate.save()
+
+            await this.TableModel
+            .updateOne({number: tableNumber}, tableToUpdate)
             .then(function()
             {
                 console.log("Table " + tableNumber + " has been updated!");
@@ -108,56 +146,9 @@ export class TableRepository
             {
                 console.log(err);
             });
+            return true;
         }
-        }
-        async getFreeTables(startDateTime: Date, endDateTime: Date):Promise<Table[]>{
-            await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-            // get list of all reservations
-            let reservationRepository = new reservationRepository();
-            let reservations = await reservationRepository.getReservations();
-
-            // get list of all tables
-            let tables = await this.getTables();
-
-            // get list of tables that are free
-            let freeTables: Table[] = [];
-            for (let table of tables)
-            {
-                let isFree = true;
-                for (let reservation of reservations)
-                {
-                    if (reservation.table.number == table.number)
-                    {
-                        if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime)
-                        {
-                            isFree = false;
-                            break;
-                        }
-                        else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime)
-                        {
-                            isFree = false;
-                            break;
-                        }
-                        else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime)
-                        {
-                            isFree = false;
-                            break;
-                        }
-                    }
-                }
-                if (isFree)
-                    freeTables.push(table);
-            }
-
-            // get list of tables that have enough seats
-            let freeTablesWithEnoughSeats: Table[] = [];
-            for (let table of freeTables)
-            {
-                if (table.seats >= numberOfPeople && table.status != 3)
-                    freeTablesWithEnoughSeats.push(table);
-            }
-
-            return freeTablesWithEnoughSeats;
-        }
+        else
+            return false;
+    }
 }
