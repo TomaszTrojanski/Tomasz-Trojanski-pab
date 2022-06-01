@@ -36,10 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.RestaurantRepository = void 0;
+exports.ReservationRepository = void 0;
 var mongoose_1 = require("mongoose");
-var RestaurantRepository = /** @class */ (function () {
-    function RestaurantRepository() {
+var ReservationRepository = /** @class */ (function () {
+    function ReservationRepository() {
         this.tableSchema = new mongoose_1.Schema({
             number: { type: Number, required: true },
             seats: { type: Number, required: true },
@@ -58,7 +58,7 @@ var RestaurantRepository = /** @class */ (function () {
         });
         this.ReservationModel = (0, mongoose_1.model)('Reservation', this.reservationSchema);
     }
-    RestaurantRepository.prototype.populateReservations = function () {
+    ReservationRepository.prototype.populateReservations = function () {
         return __awaiter(this, void 0, void 0, function () {
             var reservations;
             return __generator(this, function (_a) {
@@ -114,7 +114,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.addReservation = function (reservation) {
+    ReservationRepository.prototype.addReservation = function (reservation) {
         return __awaiter(this, void 0, void 0, function () {
             var alreadyExists, exists;
             return __generator(this, function (_a) {
@@ -158,7 +158,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.deleteReservationById = function (reservationId) {
+    ReservationRepository.prototype.deleteReservationById = function (reservationId) {
         return __awaiter(this, void 0, void 0, function () {
             var exists, existsAfter;
             return __generator(this, function (_a) {
@@ -192,7 +192,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getReservationById = function (reservationId) {
+    ReservationRepository.prototype.getReservationById = function (reservationId) {
         return __awaiter(this, void 0, void 0, function () {
             var reservation;
             return __generator(this, function (_a) {
@@ -212,7 +212,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getReservations = function () {
+    ReservationRepository.prototype.getReservations = function () {
         return __awaiter(this, void 0, void 0, function () {
             var reservations;
             return __generator(this, function (_a) {
@@ -232,7 +232,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.updateReservationById = function (reservationId, reservation) {
+    ReservationRepository.prototype.updateReservationById = function (reservationId, reservation) {
         return __awaiter(this, void 0, void 0, function () {
             var reservationToUpdate;
             return __generator(this, function (_a) {
@@ -266,7 +266,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getReservationsByCustomerName = function (customerName) {
+    ReservationRepository.prototype.getReservationsByCustomerName = function (customerName) {
         return __awaiter(this, void 0, void 0, function () {
             var reservations;
             return __generator(this, function (_a) {
@@ -286,7 +286,7 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getReservationsByTableNumber = function (tableNumber) {
+    ReservationRepository.prototype.getReservationsByTableNumber = function (tableNumber) {
         return __awaiter(this, void 0, void 0, function () {
             var reservations;
             return __generator(this, function (_a) {
@@ -306,6 +306,6 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    return RestaurantRepository;
+    return ReservationRepository;
 }());
-exports.RestaurantRepository = RestaurantRepository;
+exports.ReservationRepository = ReservationRepository;

@@ -46,6 +46,7 @@ var RestaurantRepository_1 = require("./DataStore/RestaurantRepository");
 var ReservationRepository_1 = require("./DataStore/ReservationRepository");
 var TableRepository_1 = require("./DataStore/TableRepository");
 var OrderRepository_1 = require("./DataStore/OrderRepository");
+var ProductDemandListRepository_1 = require("./DataStore/ProductDemandListRepository");
 var app = (0, express_1["default"])();
 var router = express_1["default"].Router();
 app.use(body_parser_1["default"].json());
@@ -56,7 +57,7 @@ var employeeRepository = new EmployeeRepository_1.EmployeeRepository();
 var menuItemRepository = new MenuItemRepository_1.MenuItemRepository();
 var orderRepository = new OrderRepository_1.OrderRepository();
 var productRepository = new ProductRepository_1.ProductRepository();
-var productDemandListRepository = new ProductDemandListRepository();
+var productDemandListRepository = new ProductDemandListRepository_1.ProductDemandListRepository();
 var reservationRepository = new ReservationRepository_1.ReservationRepository();
 var restaurantRepository = new RestaurantRepository_1.RestaurantRepository();
 var tableRepository = new TableRepository_1.TableRepository();
@@ -76,7 +77,7 @@ productDemandListRepository.populateProductDemandList();
 router.get('/customers', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, customerRepository.getCustomers()
+            case 0: return [4 /*yield*/, customerRepository.getCustomer()
                     .then(function (customers) {
                     if (customers)
                         res.status(200).send(customers);
@@ -593,7 +594,7 @@ router.get('/orders/table/:tableNumber', function (req, res) { return __awaiter(
 router.get('/products', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, productRepository.getProducts()
+            case 0: return [4 /*yield*/, productRepository.getProduct()
                     .then(function (products) {
                     if (products)
                         res.status(200).send(products);
@@ -940,7 +941,7 @@ router.get('/reservations/table/:number', function (req, res) { return __awaiter
 router.get('/restaurants', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, restaurantRepository.getRestaurants()
+            case 0: return [4 /*yield*/, restaurantRepository.getRestaurant()
                     .then(function (restaurants) {
                     if (restaurants)
                         res.status(200).send(restaurants);
@@ -975,55 +976,30 @@ router.get('/restaurant/:name', function (req, res) { return __awaiter(void 0, v
     });
 }); });
 // add a restaurant from request body
-router.post('/restaurant', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var restaurant, restaurantAdded;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                restaurant = req.body;
-                return [4 /*yield*/, restaurantRepository.addRestaurant(restaurant)];
-            case 1:
-                restaurantAdded = _a.sent();
-                if (restaurantAdded)
-                    res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
-                else
-                    res.status(400).send("Restaurant " + restaurant.name + " already exists.");
-                return [2 /*return*/];
-        }
-    });
-}); });
+// router.post('/restaurant', async (req: Request, res: Response) => {
+//     const restaurant = req.body;
+//     const restaurantAdded = await restaurantRepository.addRestaurant(restaurant);
+//     if (restaurantAdded)
+//         res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
+//     else
+//         res.status(400).send("Restaurant " + restaurant.name + " already exists.");
+// });
 // delete restaurant by name
-router["delete"]('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var restaurantDeleted;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, restaurantRepository.deleteRestaurantByName(req.params.name)];
-            case 1:
-                restaurantDeleted = _a.sent();
-                if (restaurantDeleted)
-                    res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
-                else
-                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-                return [2 /*return*/];
-        }
-    });
-}); });
+// router.delete('/restaurant/:name', async (req: Request, res: Response) => {
+//     const restaurantDeleted = await restaurantRepository.deleteRestaurantByName(req.params.name);
+//     if (restaurantDeleted)
+//         res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
+//     else
+//         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+// });
 // update restaurant from request body
-router.put('/restaurant/:name', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var restaurantUpdated;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, restaurantRepository.updateRestaurant(req.params.name, req.body)];
-            case 1:
-                restaurantUpdated = _a.sent();
-                if (restaurantUpdated)
-                    res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
-                else
-                    res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-                return [2 /*return*/];
-        }
-    });
-}); });
+// router.put('/restaurant/:name', async (req: Request, res: Response) => {
+//     const restaurantUpdated = await restaurantRepository.updateRestaurant(req.params.name, req.body);
+//     if (restaurantUpdated)
+//         res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
+//     else 
+//         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+// });
 // REST API for Table
 // get all tables
 router.get('/tables', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
