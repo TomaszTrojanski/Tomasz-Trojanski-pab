@@ -36,56 +36,71 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.RestaurantRepository = void 0;
+exports.ProductDemandList = exports.ProductRepository = void 0;
 var mongoose_1 = require("mongoose");
-var RestaurantRepository = /** @class */ (function () {
-    function RestaurantRepository() {
-        this.restaurantSchema = new mongoose_1.Schema({
+var ProductRepository = /** @class */ (function () {
+    function ProductRepository() {
+        this.productSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
-            address: { type: String, required: true },
-            phone: { type: String, required: true },
-            nip: { type: String, required: true },
-            email: { type: String, required: true },
-            website: { type: String, required: true },
-            description: String
+            price: { type: Number, required: true },
+            quantity: { type: Number, required: true }
         });
-        this.RestaurantModel = (0, mongoose_1.model)('Restaurant', this.restaurantSchema);
+        this.ProductModel = (0, mongoose_1.model)('Product', this.productSchema);
     }
-    RestaurantRepository.prototype.checkIfRestaurantExists = function (restaurantName) {
-        throw new Error("Method not implemented.");
-    };
-    RestaurantRepository.prototype.populateRestaurants = function () {
+    ProductRepository.prototype.populateProducts = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var restaurants;
+            var products;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        restaurants = [
+                        products = [
                             {
-                                name: 'Restauracja',
-                                address: 'ul. Krakowska',
-                                phone: '123456789',
-                                nip: '123456789',
-                                email: 'resem@gmail.com',
-                                website: 'www.restauracja.pl'
+                                name: 'Cola',
+                                price: 2.5,
+                                quantity: 10
                             }, {
-                                name: 'Restauracja2',
-                                address: 'ul. Krakowska2',
-                                phone: '123456782',
-                                nip: '123456782',
-                                email: 'resem2@gmail.com',
-                                website: 'www.restauracja2.pl'
+                                name: 'Fanta',
+                                price: 3.5,
+                                quantity: 10
+                            }, {
+                                name: 'Sprite',
+                                price: 4.5,
+                                quantity: 10
+                            }, {
+                                name: 'Coca-Cola Zero',
+                                price: 1.5,
+                                quantity: 10
+                            },
+                            {
+                                name: 'Red_Wine_Bottle',
+                                price: 5,
+                                quantity: 50
+                            },
+                            {
+                                name: 'Chicken',
+                                price: 3,
+                                quantity: 100
+                            },
+                            {
+                                name: 'Mushroom',
+                                price: 1,
+                                quantity: 200
+                            },
+                            {
+                                name: 'Cabbage',
+                                price: 2,
+                                quantity: 500
                             }
                         ];
-                        return [4 /*yield*/, this.RestaurantModel.countDocuments()];
+                        return [4 /*yield*/, this.ProductModel.countDocuments()];
                     case 2:
                         if (!((_a.sent()) === 0)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, this.RestaurantModel
-                                .insertMany(restaurants)
+                        return [4 /*yield*/, this.ProductModel
+                                .insertMany(products)
                                 .then(function () {
-                                console.log("Restaurants have been populated!");
+                                console.log('Products have been populated');
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -97,58 +112,17 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.addRestaurant = function (restaurant) {
+    ProductRepository.prototype.addProduct = function (product) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .create(restaurant)
+                        return [4 /*yield*/, this.ProductModel
+                                .create(product)
                                 .then(function () {
-                                console.log("Restaurant" + restaurant.name + " has been added");
-                            })];
-                    case 2:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    RestaurantRepository.prototype.getRestaurant = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var restaurants;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .find()
-                                .then(function (res) {
-                                restaurants = res;
-                            })["catch"](function (err) {
-                                console.log(err);
-                            })];
-                    case 2:
-                        _a.sent();
-                        return [2 /*return*/, restaurants];
-                }
-            });
-        });
-    };
-    RestaurantRepository.prototype.deleteRestaurantByName = function (restaurantName) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
-                    case 1:
-                        _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel
-                                .deleteOne({ name: restaurantName })
-                                .then(function () {
-                                console.log("Restaurant " + restaurant.name + "has been deleted");
+                                console.log("Product" + product.productId + "has been added");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -159,19 +133,40 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.getRestaurantByName = function (restaurantName) {
+    ProductRepository.prototype.deleteProductByName = function (productName) {
         return __awaiter(this, void 0, void 0, function () {
-            var restaurant;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                        return [4 /*yield*/, this.ProductModel
+                                .deleteOne({ name: productName })
+                                .then(function () {
+                                console.log("Product" + productName + " has been deleted!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
                     case 2:
-                        restaurant = _a.sent();
-                        if (restaurant) {
-                            return [2 /*return*/, restaurant];
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ProductRepository.prototype.getProductByName = function (productName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var product;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.ProductModel.findOne({ name: productName })];
+                    case 2:
+                        product = _a.sent();
+                        if (product) {
+                            return [2 /*return*/, product];
                         }
                         else {
                             return [2 /*return*/, null];
@@ -181,58 +176,39 @@ var RestaurantRepository = /** @class */ (function () {
             });
         });
     };
-    RestaurantRepository.prototype.CheckIfRestaurantExists = function (restaurantName) {
+    ProductRepository.prototype.getProduct = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var restaurant;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
-                    case 2:
-                        restaurant = _a.sent();
-                        if (restaurant) {
-                            return [2 /*return*/, true];
-                        }
-                        else {
-                            return [2 /*return*/, false];
-                        }
-                        return [2 /*return*/];
+                        return [2 /*return*/, this.ProductModel.find()];
                 }
             });
         });
     };
-    RestaurantRepository.prototype.updateRestaurant = function (restaurantName, restaurant) {
+    ProductRepository.prototype.updateProduct = function (productName, product) {
         return __awaiter(this, void 0, void 0, function () {
-            var restaurantToUpdate;
+            var productToUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.RestaurantModel.findOne({ name: restaurantName })];
+                        return [4 /*yield*/, this.ProductModel.findOne({ name: productName })];
                     case 2:
-                        restaurantToUpdate = _a.sent();
-                        if (!restaurantToUpdate) return [3 /*break*/, 4];
-                        if (restaurant.name)
-                            restaurantToUpdate.name = restaurant.name;
-                        if (restaurant.address)
-                            restaurantToUpdate.address = restaurant.address;
-                        if (restaurant.phone)
-                            restaurantToUpdate.phone = restaurant.phone;
-                        if (restaurant.nip)
-                            restaurantToUpdate.nip = restaurant.nip;
-                        if (restaurant.email)
-                            restaurantToUpdate.email = restaurant.email;
-                        if (restaurant.website)
-                            restaurantToUpdate.website = restaurant.website;
-                        if (restaurant.description)
-                            restaurantToUpdate.description = restaurant.description;
-                        return [4 /*yield*/, this.RestaurantModel
-                                .updateOne({ name: restaurantName }, restaurantToUpdate)
+                        productToUpdate = _a.sent();
+                        if (!productToUpdate) return [3 /*break*/, 4];
+                        if (product.name)
+                            productToUpdate.name = product.name;
+                        if (product.price)
+                            productToUpdate.price = product.price;
+                        if (product.quantity)
+                            productToUpdate.quantity = product.quantity;
+                        return [4 /*yield*/, productToUpdate.save()
                                 .then(function () {
-                                console.log("Restaurant " + restaurantName + " has been updated!");
+                                console.log("Product " + productName + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
@@ -240,13 +216,46 @@ var RestaurantRepository = /** @class */ (function () {
                         _a.sent();
                         return [3 /*break*/, 5];
                     case 4:
-                        console.log("Restaurant " + restaurantName + " does not exist!");
+                        console.log("Product " + productName + " does not exist!");
                         _a.label = 5;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    return RestaurantRepository;
+    return ProductRepository;
 }());
-exports.RestaurantRepository = RestaurantRepository;
+exports.ProductRepository = ProductRepository;
+var ProductDemandList = /** @class */ (function () {
+    function ProductDemandList() {
+        this.productNames = [];
+        this.productQuantities = [];
+        this.productNames = [];
+        this.productQuantities = [];
+    }
+    ProductDemandList.prototype.AddProduct = function (product) {
+        var index = this.productNames.indexOf(product.name);
+        if (index == -1) {
+            this.productNames.push(product.name);
+            this.productQuantities.push(product.quantity);
+        }
+        else {
+            this.productQuantities[index] += product.quantity;
+        }
+    };
+    ProductDemandList.prototype.GetProductName = function () {
+        return this.productNames;
+    };
+    ProductDemandList.prototype.GetDemandList = function () {
+        return this;
+    };
+    ProductDemandList.prototype.GetProductQuantityByName = function (name) {
+        var index = this.productNames.indexOf(name);
+        return this.productQuantities[index];
+    };
+    ProductDemandList.prototype.GetProductQuantityByIndex = function (index) {
+        return this.productQuantities[index];
+    };
+    return ProductDemandList;
+}());
+exports.ProductDemandList = ProductDemandList;
