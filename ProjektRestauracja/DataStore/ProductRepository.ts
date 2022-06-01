@@ -46,7 +46,7 @@ export class ProductRepository{
         .insertMany(products)
         .then(function(){
             console.log('Products have been populated')
-        }).catch(function(err){
+        }).catch(function(err: any){
             console.log(err);
         });
     }
@@ -58,7 +58,7 @@ export class ProductRepository{
         .create(product)
         .then(function(){
             console.log("Product"+product.productId+"has been added")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
@@ -69,7 +69,7 @@ export class ProductRepository{
         .deleteOne({productId: productId})
         .then(function(){
             console.log("Product"+productId+" has been deleted!")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
@@ -97,7 +97,7 @@ export class ProductRepository{
         .updateOne({productId: product.productId}, product)
         .then(function(){
             console.log("Product"+product.productId+" has been updated!")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
