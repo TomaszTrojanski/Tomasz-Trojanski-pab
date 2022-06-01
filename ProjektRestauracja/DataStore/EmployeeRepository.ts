@@ -21,7 +21,7 @@ export class EmployeeRepository
             name: {type: String, required: true},
             surname: {type: String, required: true},
             position: {type: String, required: true},
-            restaurant: {type: this.restaurantSchema, required: true}
+            // restaurant: {type: this.restaurantSchema, required: true}
         });
 
     EmployeeModel = model<Employee>('Employee', this.employeeSchema);
@@ -97,7 +97,7 @@ export class EmployeeRepository
             .then(function()
             {
                 console.log("Employees have been populated!")
-            }).catch(function(err)
+            }).catch(function(err:any)
             {
                 console.log(err);
             });
@@ -117,7 +117,7 @@ export class EmployeeRepository
         .then(function()
         {
             console.log("Employee " + employee.name + " " + employee.surname + " has been added!");
-        }).catch(function(err)
+        }).catch(function(err:any)
         {
             console.log(err);
         });
@@ -142,7 +142,7 @@ export class EmployeeRepository
         .then(function()
         {
             console.log("Employee " + employeeName + " " + employeeSurname + " has been deleted!");
-        }).catch(function(err)
+        }).catch(function(err:any)
         {
             console.log(err);
         });

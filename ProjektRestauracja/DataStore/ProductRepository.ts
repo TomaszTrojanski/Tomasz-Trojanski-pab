@@ -1,5 +1,4 @@
 import { Schema, model, connect } from "mongoose";
-import { setTheUsername } from "whatwg-url";
 import Product from "../Core/ProductModel";
 
 export class ProductRepository{
@@ -14,44 +13,64 @@ export class ProductRepository{
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        const products =[
+        const products =
+        [
             {
-                name: 'Cola',
+                name: "Coca_Cola_Can",
                 price: 2.5,
-                quantity: 10
-            },{
-                name: 'Fanta',
-                price: 3.5,
-                quantity: 10
-            },{
-                name: 'Sprite',
-                price: 4.5,
-                quantity: 10
-            },{
-                name: 'Coca-Cola Zero',
-                price: 1.5,
-                quantity: 10
+                quantity: 250
             },
             {
-                name: 'Red_Wine_Bottle',
+                name: "Fanta_Can",
+                price: 2.5,
+                quantity: 250
+            },
+            {
+                name: "Carrot",
+                price: 1.5,
+                quantity: 100
+            },
+            {
+                name: "Parsley",
+                price: 1.5,
+                quantity: 100
+            },
+            {
+                name: "Onion",
+                price: 1.5,
+                quantity: 100
+            },
+            {
+                name: "Tomato",
+                price: 1.5,
+                quantity: 100
+            },
+            {
+                name: "Cucumber",
+                price: 1.5,
+                quantity: 100
+            },
+            {
+                name: "Red_Wine_Bottle",
                 price: 5,
                 quantity: 50
             },
             {
-                name: 'Chicken',
+                name: "Chicken",
                 price: 3,
                 quantity: 100
             },
             {
-                name: 'Mushroom',
+                name: "Mushroom",
                 price: 1,
                 quantity: 200
             },
             {
-                name: 'Cabbage',
+                name: "Cabbage",
                 price: 2,
                 quantity: 500
-            }];
+            }
+        ];
                 if(await this.ProductModel.countDocuments() === 0){
             await this.ProductModel
             .insertMany(products)
@@ -62,47 +81,72 @@ export class ProductRepository{
             });
         }
     }
-    async addProduct(product: Product):Promise<void>
+    async addProduct(product: Product):Promise<boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
+        const alreadyExists = await this.ProductModel.exists({name: product.name});
+        if (alreadyExists)
+            return false;
+
         await this.ProductModel
         .create(product)
-        .then(function(){
-            console.log("Product"+product.productId+"has been added")}
-        ).catch(function(err: any){
+        .then(function()
+        {
+            console.log("Product " + product.name + " has been added!");
+        }).catch(function(err:any)
+        {
             console.log(err);
         });
+
+        const existsAfter = await this.ProductModel.findOne({name: product.name});
+        if (existsAfter)
+            return true;
+        else
+            return false;
     }
-    async deleteProductByName(productName: string):Promise<void>{
+    async deleteProductByName(productName: string):Promise<boolean>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const exists = await this.ProductModel.exists({name: productName});
+        if (!exists)
+            return false;
 
         await this.ProductModel
         .deleteOne({name: productName})
-        .then(function(){
-            console.log("Product"+productName+" has been deleted!")}
-        ).catch(function(err: any){
+        .then(function()
+        {
+            console.log("Product " + productName + " has been deleted!");
+        }).catch(function(err:any)
+        {
             console.log(err);
         });
+
+        const existsAfter = await this.ProductModel.findOne({name: productName});
+        if (!existsAfter)
+            return true;
+        else
+            return false;
     }
-    async getProductByName(productName:string):Promise<Product>{
+    async getProductByName(productName:string):Promise<Product| boolean>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let product = await this.ProductModel.findOne({name: productName})
+        const product = await this.ProductModel.findOne({name: productName});
         if(product)
-        {
-            
             return product;
-        }else{
-            return null as any;
-        }
+        else
+            return false;
     }
-    async getProduct():Promise<Product[]>{
+    async getProduct():Promise<Product[] | boolean>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        return this.ProductModel.find();
+        
+        const products = await this.ProductModel.find({});
+        if(products.length > 0)
+            return products;
+        else
+            return false;
     }
-    async updateProduct(productName: string, product: Product):Promise<void>{
+    async updateProductByName(productName:string, product: Product) : Promise<boolean>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
         let productToUpdate = await this.ProductModel.findOne({name: productName});
@@ -114,48 +158,54 @@ export class ProductRepository{
                 productToUpdate.price = product.price;
             if(product.quantity)
                 productToUpdate.quantity = product.quantity;
-                await productToUpdate.save()
-                .then(function(){
-                    console.log("Product " + productName + " has been updated!");
-                }).catch(function(err: any){
-                    console.log(err);
-                });}else{
-                console.log("Product " + productName + " does not exist!");
+
+            await productToUpdate.save()
+            .then(function()
+            {
+                console.log("Product " + productName + " has been updated!");
+            }).catch(function(err:any)
+            {
+                console.log(err);
+            });
+
+            return true;
         }
+        else
+            return false;
     }
 }
 
-export class ProductDemandList
-{
-    productNames: string[]=[];
-    productQuantities: number[]=[];
+// export class ProductDemandList
+// {
+//     productNames: string[]=[];
+//     productQuantities: number[]=[];
 
-    constructor(){
-        this.productNames = [];
-        this.productQuantities = [];
-    }
+//     constructor(){
+//         this.productNames = [];
+//         this.productQuantities = [];
+//     }
 
-    AddProduct(product: Product){
-        let index = this.productNames.indexOf(product.name);
-        if(index == -1){
-            this.productNames.push(product.name);
-            this.productQuantities.push(product.quantity);
-        }else{
-            this.productQuantities[index] += product.quantity;
-        }
-    }
-    GetProductName()
-    {
-        return this.productNames;
-    }
-    GetDemandList(){
-        return this;
-    }
-    GetProductQuantityByName(name: string){
-        let index = this.productNames.indexOf(name);
-        return this.productQuantities[index];
-    }
-    GetProductQuantityByIndex(index: number){
-        return this.productQuantities[index];
-    }
-}
+//     AddProduct(product: Product){
+//         let index = this.productNames.indexOf(product.name);
+//         if(index == -1){
+//             this.productNames.push(product.name);
+//             this.productQuantities.push(product.quantity);
+//         }else{
+//             this.productQuantities[index] += product.quantity;
+//         }
+//     }
+//     GetProductName()
+//     {
+//         return this.productNames;
+//     }
+//     GetDemandList(){
+//         return this;
+//     }
+//     GetProductQuantityByName(name: string){
+//         let index = this.productNames.indexOf(name);
+//         return this.productQuantities[index];
+//     }
+//     GetProductQuantityByIndex(index: number){
+//         return this.productQuantities[index];
+//     }
+// }

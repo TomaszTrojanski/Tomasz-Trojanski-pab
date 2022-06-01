@@ -29,14 +29,15 @@ export class RestaurantRepository
                 customer: '62826610ec4736a45905ecae'
         }];
 
+        
         if(await this.ReservationModel.countDocuments() === 0)
         {
             await this.ReservationModel
             .insertMany(reservations)
             .then(function()
             {
-                console.log("Reservation for table " + reservation.table.number + " has been added!");
-        }).catch(function(err: any)
+                console.log("Reservations have been populated!")
+            }).catch(function(err: any)
             {
                 console.log(err);
             }); 

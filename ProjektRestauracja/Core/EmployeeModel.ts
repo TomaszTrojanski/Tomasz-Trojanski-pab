@@ -3,13 +3,13 @@ class Employee{
     name: string;
     surname: string;
     position: string;
-    restaraunt: Restaurant;
+    restaurant: Restaurant;
 
-    constructor(name: string, surname: string, position: string, restaraunt: Restaurant){
+    constructor(name: string, surname: string, position: string, restaurant: Restaurant){
         this.name = name;
         this.surname = surname;
         this.position = position;
-        this.restaraunt = restaraunt;
+        this.restaurant = restaurant;
     }
 }
 export default Employee;
