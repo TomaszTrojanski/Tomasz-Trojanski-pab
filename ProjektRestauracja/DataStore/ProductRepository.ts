@@ -4,7 +4,6 @@ import Product from "../Core/ProductModel";
 
 export class ProductRepository{
     productSchema = new Schema<Product>({
-        productId : {type: Number, required: true},
         name: {type: String, required: true},
         price: {type: Number, required: true},
         quantity: {type: Number, required: true}
@@ -17,38 +16,31 @@ export class ProductRepository{
 
         const products =[
             {
-                productId: 1,
                 name: 'Cola',
                 price: 2.5,
-                quantity: 10,
-                unit:2
+                quantity: 10
             },{
-                productId: 2,
                 name: 'Fanta',
-                price: 2.5,
-                quantity: 10,
-                unit:2
+                price: 3.5,
+                quantity: 10
             },{
-                productId: 3,
                 name: 'Sprite',
-                price: 2.5,
-                quantity: 10,
-                unit:2
+                price: 4.5,
+                quantity: 10
             },{
-                productId: 4,
                 name: 'Coca-Cola Zero',
-                price: 2.5,
-                quantity: 10,
-                unit:2
+                price: 1.5,
+                quantity: 10
             }];
-
-        await this.ProductModel
-        .insertMany(products)
-        .then(function(){
-            console.log('Products have been populated')
-        }).catch(function(err: any){
-            console.log(err);
-        });
+                if(await this.ProductModel.countDocuments() === 0){
+            await this.ProductModel
+            .insertMany(products)
+            .then(function(){
+                console.log('Products have been populated')
+            }).catch(function(err: any){
+                console.log(err);
+            });
+        }
     }
     async addProduct(product: Product):Promise<void>
     {
@@ -62,21 +54,21 @@ export class ProductRepository{
             console.log(err);
         });
     }
-    async deleteProductByNumber(productId: number):Promise<void>{
+    async deleteProductByName(productName: string):Promise<void>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
         await this.ProductModel
-        .deleteOne({productId: productId})
+        .deleteOne({name: productName})
         .then(function(){
-            console.log("Product"+productId+" has been deleted!")}
+            console.log("Product"+productName+" has been deleted!")}
         ).catch(function(err: any){
             console.log(err);
         });
     }
-    async getProductByNumber(productId:number):Promise<Product>{
+    async getProductByName(productName:string):Promise<Product>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let product = await this.ProductModel.findOne({productId: productId})
+        let product = await this.ProductModel.findOne({name: productName})
         if(product)
         {
             
@@ -85,21 +77,26 @@ export class ProductRepository{
             return null as any;
         }
     }
-    async getProduct(){
+    async getProduct():Promise<Product[]>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
         return this.ProductModel.find();
     }
-    async updateProduct(product: Product):Promise<void>{
+    async updateProduct(productName: string, product: Product):Promise<void>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        await this.ProductModel
-        .updateOne({productId: product.productId}, product)
-        .then(function(){
-            console.log("Product"+product.productId+" has been updated!")}
-        ).catch(function(err: any){
-            console.log(err);
-        });
+        let productToUpdate = await this.ProductModel.findOne({name: productName});
+        if(productToUpdate)
+        {
+            if(product.name)
+                productToUpdate.name = product.name;
+            if(product.price)
+                productToUpdate.price = product.price;
+            if(product.quantity)
+                productToUpdate.quantity = product.quantity;
+            await productToUpdate.save();
+            console.log("Product " + productName + " has been updated!");
+        }
     }
 }
 
