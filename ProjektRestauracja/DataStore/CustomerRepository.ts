@@ -4,7 +4,6 @@ import Customer from "../Core/CustomerModel";
 export class CustomerRepository{
     customerSchema = new Schema<Customer>(
         {
-            customerId: {type: Number, required: true},
             name: {type: String, required: true},
             email: {type: String, required: true},
             phone: {type: String, required: true},
@@ -24,21 +23,27 @@ export class CustomerRepository{
                 phone: '123456789',
                 address: 'ul. Adres',
                 loyaltyPoints: 0
-},{
+    },{
                 name: 'Customer2',
                 email: 'customre2@gmail.com',
                 phone: '123456782',
                 address: 'ul. Adres2',
                 loyaltyPoints: 0
-}];
+    }];
 
+    if (await this.CustomerModel.countDocuments() === 0)
+    {
         await this.CustomerModel
         .insertMany(customers)
-        .then(function(){
-            console.log('Customers have been populated')
-        }).catch(function(err: any){
+        .then(function()
+        {
+            console.log("Customers have been populated!")
+        }
+        ).catch(function(err: any)
+        {
             console.log(err);
         });
+    }
     }
 
     async addCustomer(customer: Customer):Promise<void>

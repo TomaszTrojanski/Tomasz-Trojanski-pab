@@ -42,14 +42,19 @@ async populateRestaurants() : Promise<void>
             email: 'resem2@gmail.com',
             website: 'www.restauracja2.pl',
         }];
-    await this.RestaurantModel
-    .insertMany(restaurants)
-    .then(function(){
-        console.log("Restaurants"+restaurant.name+" have benn populated")
-}).catch(function(err){
-    console.log(err);
-});
-}
+        if(await this.RestaurantModel.countDocuments() === 0)
+        {
+            await this.RestaurantModel
+            .insertMany(restaurants)
+            .then(function()
+            {
+                console.log("Restaurants have been populated!")
+            }).catch(function(err)
+            {
+                console.log(err);
+            });
+        }
+    }
 
 async addRestaurant(restaurant: Restaurant):Promise<void> 
 {
@@ -67,7 +72,7 @@ async getRestaurant():Promise<Restaurant[]> {
     await this.RestaurantModel
     .find()
     .then(function(res){
-        restaurants=res;}).catch(function(err){
+        restaurants=res;}).catch(function(err:any){
             console.log(err);
         });
 
