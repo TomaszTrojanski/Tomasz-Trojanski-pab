@@ -1,4 +1,4 @@
-import bodyParser from 'body-parser';
+const bodyParser = require( 'body-parser');
 import express from 'express';
 import {Request, Response} from 'express';
 import { CustomerRepository } from './DataStore/CustomerRepository';
@@ -286,18 +286,6 @@ router.put('/menuItem/:name', async (req: Request, res: Response) => {
     }).catch(function(err: any)
     {
         res.status(500).send(err);
-    });
-});
-
-// get menu grouped by type
-router.get('/menu', async (req: Request, res: Response) => {
-    await menuItemRepository.getMenu()
-    .then(function(menu: any)
-    {
-        res.send(menu);
-    }).catch(function(err: any)
-    {
-        res.send(err);
     });
 });
 
