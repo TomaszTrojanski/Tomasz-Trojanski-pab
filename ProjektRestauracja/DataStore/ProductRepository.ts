@@ -31,6 +31,26 @@ export class ProductRepository{
                 name: 'Coca-Cola Zero',
                 price: 1.5,
                 quantity: 10
+            },
+            {
+                name: 'Red_Wine_Bottle',
+                price: 5,
+                quantity: 50
+            },
+            {
+                name: 'Chicken',
+                price: 3,
+                quantity: 100
+            },
+            {
+                name: 'Mushroom',
+                price: 1,
+                quantity: 200
+            },
+            {
+                name: 'Cabbage',
+                price: 2,
+                quantity: 500
             }];
                 if(await this.ProductModel.countDocuments() === 0){
             await this.ProductModel
