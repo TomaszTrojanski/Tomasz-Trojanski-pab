@@ -1,5 +1,6 @@
-const bodyParser = require( 'body-parser');
+
 import express from 'express';
+import bodyParser from 'body-parser';
 import {Request, Response} from 'express';
 import { CustomerRepository } from './DataStore/CustomerRepository';
 import { EmployeeRepository } from './DataStore/EmployeeRepository';

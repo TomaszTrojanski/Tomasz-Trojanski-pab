@@ -36,8 +36,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var body_parser_1 = require("body-parser");
 var express_1 = require("express");
+var body_parser_1 = require("body-parser");
 var CustomerRepository_1 = require("./DataStore/CustomerRepository");
 var EmployeeRepository_1 = require("./DataStore/EmployeeRepository");
 var MenuItemRepository_1 = require("./DataStore/MenuItemRepository");
