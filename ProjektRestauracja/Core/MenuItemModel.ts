@@ -1,7 +1,6 @@
 import Product from './ProductModel';
 
-enum Type 
-{
+enum Type {
     Starter,
     MainDish,
     Soup,
