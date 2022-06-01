@@ -21,7 +21,7 @@ export class EmployeeRepository
             name: {type: String, required: true},
             surname: {type: String, required: true},
             position: {type: String, required: true},
-            restaurant: {type: this.restaurantSchema, required: true}
+            restaurant: {type: Schema.Types.ObjectId, ref: 'Restaurant', required: true}
         });
 
     EmployeeModel = model<Employee>('Employee', this.employeeSchema);
