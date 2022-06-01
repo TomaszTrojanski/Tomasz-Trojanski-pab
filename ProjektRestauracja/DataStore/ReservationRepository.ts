@@ -3,7 +3,7 @@ import Reservation from '../Core/ReservationModel';
 import Table from '../Core/TablesModel';
 import Customer from '../Core/CustomerModel';
 
-export class RestaurantRepository
+export class ReservationRepository
 {
     tableSchema = new Schema<Table>(
        {
