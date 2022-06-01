@@ -3,11 +3,25 @@ import MenuItem from "../Core/MenuItemModel";
 import Product from "../Core/ProductModel";
 
 export class MenuItemRepository{
-    menuItemSchema = new Schema<MenuItem>({
+    productSchema = new Schema<Product>({
         name: {type: String, required: true},
         price: {type: Number, required: true},
         quantity: {type: Number, required: true}
     });
+
+    menuItemSchema = new Schema<MenuItem>(
+        {
+            name: {type: String, required: true},
+            price: {type: Number, required: true},
+            type: {type: Number, required: true},
+            description: {type: String, required: true},
+            products: 
+            [{
+                type: this.productSchema, 
+                required: true
+            }]
+        });
+
     MenuItemModel = model<MenuItem>('MenuItem', this.menuItemSchema);
 
     async populateMenuItems() : Promise<void>{

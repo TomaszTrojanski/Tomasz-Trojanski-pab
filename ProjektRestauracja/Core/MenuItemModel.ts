@@ -13,14 +13,14 @@ class MenuItem{
     price: number;
     type: Type;
     description: string;
-    product: Product[];
+    products: Product[];
 
-    constructor(name: string, price: number, type: Type, description: string, product: Product[]){
+    constructor(name: string, price: number, type: Type, description: string, products: Product[]){
         this.name = name;
         this.price = price;
         this.type = type;
         this.description = description;
-        this.product = product;
+        this.products = products;
     }
 }
 export default MenuItem;
