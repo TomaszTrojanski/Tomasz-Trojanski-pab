@@ -38,7 +38,7 @@ export class CustomerRepository{
         .insertMany(customers)
         .then(function(){
             console.log('Customers have been populated')
-        }).catch(function(err){
+        }).catch(function(err: any){
             console.log(err);
         });
     }
@@ -51,7 +51,7 @@ export class CustomerRepository{
         .create(customer)
         .then(function(){
             console.log("Customer"+customer.name+"has been added")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
@@ -63,7 +63,7 @@ export class CustomerRepository{
         .deleteOne({name: customerName})
         .then(function(){
             console.log("Customer"+customer.name+" has been deleted")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
@@ -94,7 +94,7 @@ export class CustomerRepository{
         .updateOne({name: customer.name}, customer)
         .then(function(){
             console.log("Customer"+customer.name+" has been updated")}
-        ).catch(function(err){
+        ).catch(function(err: any){
             console.log(err);
         });
     }
@@ -110,7 +110,7 @@ export class CustomerRepository{
             .updateOne({name: customer.name}, customer)
             .then(function(){
                 console.log("Customer"+customer.name+" has been updated")}
-            ).catch(function(err){
+            ).catch(function(err: any){
                 console.log(err);
             });
         }  else{
