@@ -63,8 +63,13 @@ router.post('/customers', async (req: Request, res: Response) => {
     res.status(200).json(customer);
 });
 // update customer from body
-router.put('/customers/:name', async (req: Request, res: Response) => {
+router.put('/customers/', async (req: Request, res: Response) => {
     const customer = await customerRepository.updateCustomer(req.body);
+    res.status(200).json(customer);
+});
+// add loyalty points to customer
+router.put('/customers/:name/loyalty', async (req: Request, res: Response) => {
+    const customer = await customerRepository.addLoyaltyPoints(req.params.name, req.body.points);
     res.status(200).json(customer);
 });
 // REST API for Restaurant
@@ -101,5 +106,10 @@ router.post('/restaurant', async (req: Request, res: Response) => {
     const restaurant = req.body;
     await restaurantRepository.addRestaurant(restaurant);
     res.status(200).send('Restaurant added');
+});
+// update restaurant from body
+router.put('/restaurant/', async (req: Request, res: Response) => {
+    const restaurant = req.body;
+    res.status(200).json(restaurant);
 });
 app.listen(3000);
