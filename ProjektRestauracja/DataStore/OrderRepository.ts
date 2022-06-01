@@ -137,20 +137,24 @@ export class OrderRepository
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let menuItemRepository = new MenuItemRepository();
+        const alreadyExists = await this.OrderModel.findOne({
+            dateTime: order.dateTime,
+           'employee.name': order.employee.name,
+        });
+        if(alreadyExists)
+            return "Such order already exists.";
 
-        if(!order.price){
+        if(!order.price || order.price === 0)
+        {
             let price = 0;
-            for(let i = 0; i < order.items.length; i++)
+            for(let item of order.items)
             {
-                let orderMenuItem = order.items[i];
-                let itemPrice = (await menuItemRepository.getMenuItemById(orderMenuItem._id)).price;
-                price += +itemPrice;
+                price += +item.price;
             }
             order.price = price;
         }
 
-        await this.orderModel
+        await this.OrderModel
         .create(order)
         .then(function()
         {
@@ -159,43 +163,67 @@ export class OrderRepository
         {
             console.log(err);
         });
+
+        const exists = await this.OrderModel.findOne({
+            dateTime: order.dateTime,
+            'employee.name': order.employee.name,
+        });
+        if(exists)
+            return true;
+        else
+            return "Order has not been added.";
     }
 
-    async deleteOrderById(id: string) : Promise<void>
+    async deleteOrderById(orderId: string) : Promise<boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-        await this.orderModel
-        .findByIdAndDelete(id)
+       
+        const exists = await this.OrderModel.findById(orderId);
+        if(!exists)
+            return false;
+
+        await this.OrderModel
+        .findByIdAndDelete(orderId)
         .then(function()
         {
-            console.log("Order has been deleted!")
+            console.log("Order " + orderId + " has been deleted!")
         }).catch(function(err: any)
         {
             console.log(err);
         });
+
+        const existsAfter = await this.OrderModel.findById(orderId);
+        if(!existsAfter)
+            return true;
+        else
+            return false;
     }
 
-    async getOrderById(id: string) : Promise<Order>
+    async getOrderById(id: string) : Promise<Order | boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-        let order = await this.orderModel.findById(id);
+        
+        const order = await this.OrderModel.findById(id);
         if (order)
             return order;
         else
-            return null as any;
+            return false;
     }
 
-    async getOrders() : Promise<Order[]>
-    {
-        return await this.orderModel.find();
-    };
-
-    async updateOrderById(id: string, order: Order) : Promise<void>
+    async getOrders() : Promise<Order[] | boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-        let orderToUpdate = await this.orderModel.findById(id);
-        let menuItemRepository = new MenuItemRepository();
+        const orders = await this.OrderModel.find({});
+        if(orders.length > 0)
+            return orders;
+        else
+            return false;
+    };
+    async updateOrderById(id: string, order: Order) : Promise<boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
+        let orderToUpdate = await this.OrderModel.findById(id);
         if (orderToUpdate)
         {
             if(order.employee)
@@ -206,53 +234,54 @@ export class OrderRepository
                 orderToUpdate.status = order.status;
             if(order.table)
                 orderToUpdate.table = order.table;
-            if(order.price)
+            if(order.price || order.price !== 0)
                 orderToUpdate.price = order.price;
-            else {
+            else 
+            {
                 let price = 0;
-                for (let i = 0; i < orderToUpdate.items.length; i++)
+                for (let item of order.items)
                 {
-                    let item = orderToUpdate.items[i];
-                    let itemPrice = (await menuItemRepository.getMenuItemById(item._id)).price;
-                    price += +itemPrice;
+                    price += +item.price;
                 }
                 orderToUpdate.price = price;
             }
-        }
 
-        await orderToUpdate.save()
-        .then(function()
-        {
-            console.log("Order has been updated!")
-        }).catch(function(err: any)
-        {
-            console.log(err);
-        });
+            await orderToUpdate.save()
+            .then(function()
+            {
+                console.log("Order has been updated!")
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+            return true;
+        }
+        else
+            return false;
     }
 
-    // get orders by employee id
-    async getOrdersByEmployeeId(employeeId: string) : Promise<Order[]>
+    // get orders by employee name
+    async getOrdersByEmployeeName(employeeName: string) : Promise<Order[] | boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let orders = await this.orderModel.find({employee: employeeId});
-        if (orders)
+        const orders = await this.OrderModel.find({'employee.name': employeeName});
+        if (orders.length > 0)
             return orders;
         else
-            return null as any;
+            return false;
     }
 
     // get orders in a given time period
-    async getOrdersByTimePeriod(startDate: Date, endDate: Date) : Promise<Order[]>
+    async getOrdersByTimePeriod(startDate: Date, endDate: Date) : Promise<Order[] | boolean>
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-        rue&w=majority');
 
-        let orders = await this.orderModel.find({createdAt: {$gte: startDate, $lte: endDate}});
-        if (orders)
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
             return orders;
         else
-            return null as any;
+            return false;
     }
 
     // get income in a given time period
@@ -260,15 +289,58 @@ export class OrderRepository
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let orders = await this.orderModel.find({createdAt: {$gte: startDate, $lte: endDate}});
-        if (orders)
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
         {
             let income = 0;
             for (let order of orders)
-                income += order.price;
+            {
+                income += +order.price;
+            }
             return income;
         }
         else
-            return null as any;
+            return 0;
+    }
+
+    // get profit in a given time period
+    async getProfitByTimePeriod(startDate: Date, endDate: Date) : Promise<number>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        const orders = await this.OrderModel.find({dateTime: {$gte: startDate, $lte: endDate}});
+        if (orders.length > 0)
+        {
+            let income = 0;
+            let costs = 0;
+            let profit = 0;
+            for (let order of orders)
+            {
+                income += +order.price;
+                for(let item of order.items)
+                {
+                    for (let product of item.products)
+                    {
+                        costs += +product.price * +product.quantity;
+                    }
+                }
+                
+                profit = (+income - +costs);
+            }
+            return +profit;
+        }
+        else
+            return 0;
+    }
+
+    // get orders by table number
+    async getOrdersByTableNumber(tableNumber: number) : Promise<Order[] | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const orders = await this.OrderModel.find({'table.number': tableNumber});
+        if (orders.length > 0)  
+            return orders;
+        else
+            return false;
     }
 }
