@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.TableRepository = void 0;
 var mongoose_1 = require("mongoose");
+// import {ReservationRepository} from './ReservationRepository';
 var TableRepository = /** @class */ (function () {
     function TableRepository() {
         this.tableSchema = new mongoose_1.Schema({

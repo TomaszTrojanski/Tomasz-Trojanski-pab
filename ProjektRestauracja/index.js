@@ -36,16 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var mongoose = require('mongoose');
-var Customer = require('./Core/CustomerModel').Customer;
-var Employee = require('./Core/EmployeeModel').Employee;
-var MenuItem = require('./Core/MenuItemModel').MenuItem;
-var Order = require('./Core/OrderModel').Order;
-var OrderItem = require('./Core/OrderItemModel').OrderItem;
-var Product = require('./Core/ProductModel').Product;
-var Reservation = require('./Core/ReservationModel').Reservation;
-var Restaurant = require('./Core/RestaurantModel').Restaurant;
-var Table = require('./Core/TablesModel').Table;
 var body_parser_1 = require("body-parser");
 var express_1 = require("express");
 var CustomerRepository_1 = require("./DataStore/CustomerRepository");

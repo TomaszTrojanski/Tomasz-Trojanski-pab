@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.RestaurantRepository = void 0;
 var mongoose_1 = require("mongoose");
+var RestaurantModel_1 = require("../Core/RestaurantModel");
 var RestaurantRepository = /** @class */ (function () {
     function RestaurantRepository() {
         this.restaurantSchema = new mongoose_1.Schema({
@@ -148,7 +149,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.RestaurantModel
                                 .deleteOne({ name: restaurantName })
                                 .then(function () {
-                                console.log("Restaurant " + restaurant.name + "has been deleted");
+                                console.log("Restaurant " + RestaurantModel_1["default"].name + "has been deleted");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];

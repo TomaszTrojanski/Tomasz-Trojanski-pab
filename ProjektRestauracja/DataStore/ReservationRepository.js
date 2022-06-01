@@ -40,11 +40,21 @@ exports.RestaurantRepository = void 0;
 var mongoose_1 = require("mongoose");
 var RestaurantRepository = /** @class */ (function () {
     function RestaurantRepository() {
+        this.tableSchema = new mongoose_1.Schema({
+            number: { type: Number, required: true },
+            seats: { type: Number, required: true },
+            status: { type: Number, required: true }
+        });
+        this.customerSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            email: { type: String, required: true },
+            phone: { type: String, required: true }
+        });
         this.reservationSchema = new mongoose_1.Schema({
-            table: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Table', required: true },
+            table: { type: this.tableSchema, ref: 'Table' },
             startDateTime: { type: Date, required: true },
             endDateTime: { type: Date, required: true },
-            customer: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Customer', required: true }
+            customer: { type: this.customerSchema, ref: 'Customer' }
         });
         this.ReservationModel = (0, mongoose_1.model)('Reservation', this.reservationSchema);
     }
@@ -56,17 +66,34 @@ var RestaurantRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        reservations = [
-                            {
-                                table: '6284ab720b1b925fc9c801fe',
-                                startDateTime: new Date(2020, 1, 1, 10, 0, 0),
-                                endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                                customer: '6282601eb18137f01f157f6f'
+                        reservations = [{
+                                table: {
+                                    number: 1,
+                                    seats: 4,
+                                    status: 0
+                                },
+                                startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
+                                endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
+                                customer: {
+                                    name: "Customer1",
+                                    email: "customer1@gmail.com",
+                                    phone: "123456789",
+                                    address: "CustomerAddress1"
+                                }
                             }, {
-                                table: '6284ab720b1b925fc9c801ff',
-                                startDateTime: new Date(2020, 1, 1, 10, 0, 0),
-                                endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                                customer: '62826610ec4736a45905ecae'
+                                table: {
+                                    number: 2,
+                                    seats: 4,
+                                    status: 1
+                                },
+                                startDateTime: new Date(2020, 1, 1, 20, 0, 0, 0),
+                                endDateTime: new Date(2020, 1, 1, 21, 0, 0, 0),
+                                customer: {
+                                    name: "Customer2",
+                                    email: "customer2@gmail.com",
+                                    phone: "987654321",
+                                    address: "CustomerAddress2"
+                                }
                             }
                         ];
                         return [4 /*yield*/, this.ReservationModel.countDocuments()];
@@ -75,7 +102,7 @@ var RestaurantRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.ReservationModel
                                 .insertMany(reservations)
                                 .then(function () {
-                                console.log("Reservation for table " + reservation.table.number + " has been added!");
+                                console.log("Reservations have been populated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];

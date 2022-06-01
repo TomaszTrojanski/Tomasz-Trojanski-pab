@@ -52,8 +52,7 @@ var EmployeeRepository = /** @class */ (function () {
         this.employeeSchema = new mongoose_1.Schema({
             name: { type: String, required: true },
             surname: { type: String, required: true },
-            position: { type: String, required: true },
-            restaurant: { type: this.restaurantSchema, required: true }
+            position: { type: String, required: true }
         });
         this.EmployeeModel = (0, mongoose_1.model)('Employee', this.employeeSchema);
     }

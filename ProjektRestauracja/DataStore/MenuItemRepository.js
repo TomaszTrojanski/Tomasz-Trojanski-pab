@@ -40,13 +40,20 @@ exports.MenuItemRepository = void 0;
 var mongoose_1 = require("mongoose");
 var MenuItemRepository = /** @class */ (function () {
     function MenuItemRepository() {
+        this.productSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            quantity: { type: Number, required: true }
+        });
         this.menuItemSchema = new mongoose_1.Schema({
-            menuItemId: { type: Number, required: true },
             name: { type: String, required: true },
             price: { type: Number, required: true },
             type: { type: Number, required: true },
             description: { type: String, required: true },
-            product: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Product', required: true }
+            products: [{
+                    type: this.productSchema,
+                    required: true
+                }]
         });
         this.MenuItemModel = (0, mongoose_1.model)('MenuItem', this.menuItemSchema);
     }
@@ -189,6 +196,28 @@ var MenuItemRepository = /** @class */ (function () {
                         }
                         else {
                             console.log("Menu item " + menuItemName + " not found!");
+                            return [2 /*return*/, null];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    MenuItemRepository.prototype.getMenuItemByMenuItemId = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var menuItem;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.MenuItemModel.findOne({ menuItemId: id })];
+                    case 2:
+                        menuItem = _a.sent();
+                        if (menuItem) {
+                            return [2 /*return*/, menuItem];
+                        }
+                        else {
                             return [2 /*return*/, null];
                         }
                         return [2 /*return*/];

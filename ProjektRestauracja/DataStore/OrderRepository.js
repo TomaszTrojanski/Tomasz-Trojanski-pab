@@ -40,11 +40,43 @@ exports.OrderRepository = void 0;
 var mongoose_1 = require("mongoose");
 var OrderRepository = /** @class */ (function () {
     function OrderRepository() {
+        this.restaurantSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            address: { type: String, required: true },
+            phone: { type: String, required: true },
+            nip: { type: String, required: true },
+            email: { type: String, required: true },
+            website: { type: String, required: true },
+            description: { type: String, required: false }
+        });
+        this.employeeSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            surname: { type: String, required: true },
+            position: { type: String, required: true },
+            restaurant: { type: this.restaurantSchema, ref: 'Restaurant' }
+        });
+        this.productSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            quantity: { type: Number, required: true }
+        });
+        this.menuItemSchema = new mongoose_1.Schema({
+            name: { type: String, required: true },
+            price: { type: Number, required: true },
+            description: { type: String, required: false },
+            products: [{ type: this.productSchema, ref: 'Product' }]
+        });
+        this.tableSchema = new mongoose_1.Schema({
+            number: { type: Number, required: true },
+            seats: { type: Number, required: true },
+            status: { type: Number, required: true }
+        });
         this.orderSchema = new mongoose_1.Schema({
-            employee: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Employee' },
-            items: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'MenuItem' }],
+            dateTime: { type: Date, required: true },
+            employee: { type: this.employeeSchema, ref: 'Employee' },
+            items: [{ type: this.menuItemSchema, ref: 'MenuItem' }],
             status: { type: Number, required: true },
-            table: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Table' },
+            table: { type: this.tableSchema, ref: 'Table' },
             price: { type: Number, required: true }
         });
         this.OrderModel = (0, mongoose_1.model)('Order', this.orderSchema);
@@ -57,7 +89,367 @@ var OrderRepository = /** @class */ (function () {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        orders = [];
+                        orders = [
+                            {
+                                dateTime: new Date(),
+                                employee: {
+                                    name: "Employee2",
+                                    surname: "Employee2",
+                                    position: "Waiter",
+                                    restaurant: {
+                                        name: "Restaurant1",
+                                        address: "Address1",
+                                        phone: "123456789",
+                                        nip: "123456789",
+                                        email: "someEmail@something.com",
+                                        website: "someWebsite.com"
+                                    }
+                                },
+                                items: [
+                                    {
+                                        name: "Coca_Cola",
+                                        price: 5,
+                                        type: 3,
+                                        description: "Coca Cola can",
+                                        products: [
+                                            {
+                                                name: "Coca_Cola_Can",
+                                                price: 2.5,
+                                                quantity: 1
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        name: "Chicken_Nuggets",
+                                        price: 30,
+                                        type: 1,
+                                        description: "Chicken nuggets",
+                                        products: [
+                                            {
+                                                name: "Chicken",
+                                                price: 3,
+                                                quantity: 2
+                                            }
+                                        ]
+                                    }
+                                ],
+                                status: 1,
+                                table: {
+                                    number: 1,
+                                    seats: 4,
+                                    status: 0
+                                },
+                                price: 35
+                            }
+                        ];
+                        return [4 /*yield*/, this.OrderModel.countDocuments()];
+                    case 2:
+                        if (!((_a.sent()) === 0)) return [3 /*break*/, 4];
+                        return [4 /*yield*/, this.OrderModel
+                                .insertMany(orders)
+                                .then(function () {
+                                console.log("Orders have been populated!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ;
+    OrderRepository.prototype.addOrder = function (order) {
+        return __awaiter(this, void 0, void 0, function () {
+            var alreadyExists, price, _i, _a, item, exists;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _b.sent();
+                        return [4 /*yield*/, this.OrderModel.findOne({
+                                dateTime: order.dateTime,
+                                'employee.name': order.employee.name
+                            })];
+                    case 2:
+                        alreadyExists = _b.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, "Such order already exists."];
+                        if (!order.price || order.price === 0) {
+                            price = 0;
+                            for (_i = 0, _a = order.items; _i < _a.length; _i++) {
+                                item = _a[_i];
+                                price += +item.price;
+                            }
+                            order.price = price;
+                        }
+                        return [4 /*yield*/, this.OrderModel
+                                .create(order)
+                                .then(function () {
+                                console.log("Order has been added!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _b.sent();
+                        return [4 /*yield*/, this.OrderModel.findOne({
+                                dateTime: order.dateTime,
+                                'employee.name': order.employee.name
+                            })];
+                    case 4:
+                        exists = _b.sent();
+                        if (exists)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, "Order has not been added."];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderRepository.prototype.deleteOrderById = function (orderId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var exists, existsAfter;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.findById(orderId)];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
+                        return [4 /*yield*/, this.OrderModel
+                                .findByIdAndDelete(orderId)
+                                .then(function () {
+                                console.log("Order " + orderId + " has been deleted!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.findById(orderId)];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderRepository.prototype.getOrderById = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var order;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.findById(id)];
+                    case 2:
+                        order = _a.sent();
+                        if (order)
+                            return [2 /*return*/, order];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    OrderRepository.prototype.getOrders = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({})];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0)
+                            return [2 /*return*/, orders];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    ;
+    OrderRepository.prototype.updateOrderById = function (id, order) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orderToUpdate, price, _i, _a, item;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _b.sent();
+                        return [4 /*yield*/, this.OrderModel.findById(id)];
+                    case 2:
+                        orderToUpdate = _b.sent();
+                        if (!orderToUpdate) return [3 /*break*/, 4];
+                        if (order.employee)
+                            orderToUpdate.employee = order.employee;
+                        if (order.items)
+                            orderToUpdate.items = order.items;
+                        if (order.status)
+                            orderToUpdate.status = order.status;
+                        if (order.table)
+                            orderToUpdate.table = order.table;
+                        if (order.price || order.price !== 0)
+                            orderToUpdate.price = order.price;
+                        else {
+                            price = 0;
+                            for (_i = 0, _a = order.items; _i < _a.length; _i++) {
+                                item = _a[_i];
+                                price += +item.price;
+                            }
+                            orderToUpdate.price = price;
+                        }
+                        return [4 /*yield*/, orderToUpdate.save()
+                                .then(function () {
+                                console.log("Order has been updated!");
+                            })["catch"](function (err) {
+                                console.log(err);
+                            })];
+                    case 3:
+                        _b.sent();
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
+                }
+            });
+        });
+    };
+    // get orders by employee name
+    OrderRepository.prototype.getOrdersByEmployeeName = function (employeeName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ 'employee.name': employeeName })];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0)
+                            return [2 /*return*/, orders];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // get orders in a given time period
+    OrderRepository.prototype.getOrdersByTimePeriod = function (startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ dateTime: { $gte: startDate, $lte: endDate } })];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0)
+                            return [2 /*return*/, orders];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // get income in a given time period
+    OrderRepository.prototype.getIncomeByTimePeriod = function (startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders, income, _i, orders_1, order;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ dateTime: { $gte: startDate, $lte: endDate } })];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0) {
+                            income = 0;
+                            for (_i = 0, orders_1 = orders; _i < orders_1.length; _i++) {
+                                order = orders_1[_i];
+                                income += +order.price;
+                            }
+                            return [2 /*return*/, income];
+                        }
+                        else
+                            return [2 /*return*/, 0];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // get profit in a given time period
+    OrderRepository.prototype.getProfitByTimePeriod = function (startDate, endDate) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders, income, costs, profit, _i, orders_2, order, _a, _b, item, _c, _d, product;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _e.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ dateTime: { $gte: startDate, $lte: endDate } })];
+                    case 2:
+                        orders = _e.sent();
+                        if (orders.length > 0) {
+                            income = 0;
+                            costs = 0;
+                            profit = 0;
+                            for (_i = 0, orders_2 = orders; _i < orders_2.length; _i++) {
+                                order = orders_2[_i];
+                                income += +order.price;
+                                for (_a = 0, _b = order.items; _a < _b.length; _a++) {
+                                    item = _b[_a];
+                                    for (_c = 0, _d = item.products; _c < _d.length; _c++) {
+                                        product = _d[_c];
+                                        costs += +product.price * +product.quantity;
+                                    }
+                                }
+                                profit = (+income - +costs);
+                            }
+                            return [2 /*return*/, +profit];
+                        }
+                        else
+                            return [2 /*return*/, 0];
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // get orders by table number
+    OrderRepository.prototype.getOrdersByTableNumber = function (tableNumber) {
+        return __awaiter(this, void 0, void 0, function () {
+            var orders;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.OrderModel.find({ 'table.number': tableNumber })];
+                    case 2:
+                        orders = _a.sent();
+                        if (orders.length > 0)
+                            return [2 /*return*/, orders];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });

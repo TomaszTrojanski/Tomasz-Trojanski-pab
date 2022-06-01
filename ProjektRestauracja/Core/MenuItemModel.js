@@ -9,12 +9,12 @@ var Type;
     Type[Type["Dessert"] = 4] = "Dessert";
 })(Type || (Type = {}));
 var MenuItem = /** @class */ (function () {
-    function MenuItem(name, price, type, description, product) {
+    function MenuItem(name, price, type, description, products) {
         this.name = name;
         this.price = price;
         this.type = type;
         this.description = description;
-        this.product = product;
+        this.products = products;
     }
     return MenuItem;
 }());

@@ -8,7 +8,8 @@ var OrderStatus;
     OrderStatus[OrderStatus["BillIssued"] = 3] = "BillIssued";
 })(OrderStatus || (OrderStatus = {}));
 var Order = /** @class */ (function () {
-    function Order(employee, items, status, table, price) {
+    function Order(dateTime, employee, items, status, table, price) {
+        this.dateTime = dateTime;
         this.employee = employee;
         this.items = items;
         this.status = status;
