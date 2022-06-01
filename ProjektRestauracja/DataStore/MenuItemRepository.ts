@@ -135,6 +135,18 @@ export class MenuItemRepository{
             return null as any;
         }
     }
+    async getMenuItemByMenuItemId(id: string) : Promise<MenuItem>{
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+        let menuItem = await this.MenuItemModel.findOne({menuItemId: id});
+        if(menuItem)
+        {
+            return menuItem;
+        }
+        else
+        {
+            return null as any;
+        }
+    }
 
     async getMenuItems() : Promise<MenuItem[]>
     {
