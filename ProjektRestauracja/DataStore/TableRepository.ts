@@ -1,7 +1,7 @@
 import { Schema, model, connect } from "mongoose";
 import Table from "../Core/TablesModel";
 import Reservation from '../Core/ReservationModel';
-import {ReservationRepository} from './ReservationRepository';
+// import {ReservationRepository} from './ReservationRepository';
 
 export class TableRepository
 {

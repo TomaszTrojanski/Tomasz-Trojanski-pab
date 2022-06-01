@@ -84,7 +84,7 @@ async deleteRestaurantByName(restaurantName:string):Promise<void> {
     await this.RestaurantModel
     .deleteOne({name: restaurantName})
     .then(function(){
-        console.log("Restaurant "+restaurant.name+"has been deleted")}).catch(function(err){
+        console.log("Restaurant "+Restaurant.name+"has been deleted")}).catch(function(err){
             console.log(err);
         });
 }
