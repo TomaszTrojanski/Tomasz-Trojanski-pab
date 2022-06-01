@@ -752,32 +752,32 @@ router.get('/restaurant/:name', async (req: Request, res: Response) => {
 });
 
 // add a restaurant from request body
-router.post('/restaurant', async (req: Request, res: Response) => {
-    const restaurant = req.body;
-    const restaurantAdded = await restaurantRepository.addRestaurant(restaurant);
-    if (restaurantAdded)
-        res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
-    else
-        res.status(400).send("Restaurant " + restaurant.name + " already exists.");
-});
+// router.post('/restaurant', async (req: Request, res: Response) => {
+//     const restaurant = req.body;
+//     const restaurantAdded = await restaurantRepository.addRestaurant(restaurant);
+//     if (restaurantAdded)
+//         res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
+//     else
+//         res.status(400).send("Restaurant " + restaurant.name + " already exists.");
+// });
 
 // delete restaurant by name
-router.delete('/restaurant/:name', async (req: Request, res: Response) => {
-    const restaurantDeleted = await restaurantRepository.deleteRestaurantByName(req.params.name);
-    if (restaurantDeleted)
-        res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
-    else
-        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-});
+// router.delete('/restaurant/:name', async (req: Request, res: Response) => {
+//     const restaurantDeleted = await restaurantRepository.deleteRestaurantByName(req.params.name);
+//     if (restaurantDeleted)
+//         res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
+//     else
+//         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+// });
 
 // update restaurant from request body
-router.put('/restaurant/:name', async (req: Request, res: Response) => {
-    const restaurantUpdated = await restaurantRepository.updateRestaurant(req.params.name, req.body);
-    if (restaurantUpdated)
-        res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
-    else 
-        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
-});
+// router.put('/restaurant/:name', async (req: Request, res: Response) => {
+//     const restaurantUpdated = await restaurantRepository.updateRestaurant(req.params.name, req.body);
+//     if (restaurantUpdated)
+//         res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
+//     else 
+//         res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+// });
 
 // REST API for Table
 // get all tables
