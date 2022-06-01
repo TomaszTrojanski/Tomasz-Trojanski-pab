@@ -4,20 +4,18 @@ enum Type
 {
     Starter,
     MainDish,
-    SideDish,
+    Soup,
     Drink,
     Dessert
 }
 class MenuItem{
-    menuItemId: number;
     name: string;
     price: number;
     type: Type;
     description: string;
     product: Product[];
 
-    constructor(menuItemId: number,name: string, price: number, type: Type, description: string, product: Product[]){
-        this.menuItemId = menuItemId;
+    constructor(name: string, price: number, type: Type, description: string, product: Product[]){
         this.name = name;
         this.price = price;
         this.type = type;
