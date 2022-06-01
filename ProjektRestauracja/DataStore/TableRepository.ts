@@ -91,13 +91,24 @@ export class TableRepository
         async updateTableByNumber(tableNumber:number, table:Table):Promise<void>{
             await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-            await this.TableModel
-            .updateOne({number:tableNumber}, {$set: {status: table.status}})
-            .then(function(){
-                console.log("Table"+tableNumber+" has been updated")}
-            ).catch(function(err:any){
+            let tableToUpdate = await this.TableModel.findOne({number: tableNumber});
+        if (tableToUpdate)
+        {
+            if(table.number)
+                tableToUpdate.number = table.number;
+            if(table.seats)
+                tableToUpdate.seats = table.seats;
+            if(table.status)
+                tableToUpdate.status = table.status;
+            await tableToUpdate.save()
+            .then(function()
+            {
+                console.log("Table " + tableNumber + " has been updated!");
+            }).catch(function(err: any)
+            {
                 console.log(err);
             });
+        }
         }
         async getFreeTables(startDateTime: Date, endDateTime: Date):Promise<Table[]>{
             await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
