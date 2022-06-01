@@ -19,14 +19,12 @@ export class CustomerRepository{
 
         const customers =[
             {
-                customretId: 1,
                 name: 'Customer',
                 email: 'customer@gmail.com',
                 phone: '123456789',
                 address: 'ul. Adres',
                 loyaltyPoints: 0
 },{
-                customretId: 2,
                 name: 'Customer2',
                 email: 'customre2@gmail.com',
                 phone: '123456782',
@@ -47,6 +45,8 @@ export class CustomerRepository{
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
         
+        customer.loyaltyPoints = 0;
+
         await this.CustomerModel
         .create(customer)
         .then(function(){
@@ -105,7 +105,8 @@ export class CustomerRepository{
         let customer = await this.CustomerModel.findOne({name: customerName});
         if(customer)
         {
-            customer.loyaltyPoints += points;
+            let newLoyaltyPoints = customer.loyaltyPoints + points;
+            customer.loyaltyPoints = newLoyaltyPoints;
             await this.CustomerModel
             .updateOne({name: customer.name}, customer)
             .then(function(){

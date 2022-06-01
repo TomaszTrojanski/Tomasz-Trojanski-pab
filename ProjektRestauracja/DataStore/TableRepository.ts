@@ -39,7 +39,7 @@ export class TableRepository
         .then(function(){
             console.log('Tables have been populated')
         }
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -52,7 +52,7 @@ export class TableRepository
         .create(table)
         .then(function(){
             console.log("Table"+table.tableNumber+"has been added")}
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -63,7 +63,7 @@ export class TableRepository
         .deleteOne({tableNumber: tableNumber})
         .then(function(){
             console.log("Table"+{tableNumber}+" has been deleted")}
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -91,7 +91,7 @@ export class TableRepository
             .updateOne({tableNumber: table.tableNumber}, {$set: {status: table.status}})
             .then(function(){
                 console.log("Table"+{tableNumber}+" has been updated")}
-            ).catch(function(err){
+            ).catch(function(err:any){
                 console.log(err);
             });
         }
