@@ -4,7 +4,7 @@ import Table from "../Core/TablesModel";
 export class TableRepository
 {
     tableSchema = new Schema<Table>({
-        tableNumber: {type: Number, required: true},
+        number: {type: Number, required: true},
         seats: {type: Number, required: true},
         status: {type: Number, required: true}
     });
@@ -16,32 +16,36 @@ export class TableRepository
 
         const tables =[
             {
-                tableNumber: 1,
+                number: 1,
                 seats: 4,
                 status: 0
     },{
-                tableNumber: 2,
+                number: 2,
                 seats: 4,
                 status: 0
     },{
-                tableNumber: 3,
+                number: 3,
                 seats: 4,
                 status: 0
     },{
-                tableNumber: 4,
+                number: 4,
 
                 seats: 4,
                 status: 0
     }];
 
+    if(await this.TableModel.countDocuments() === 0)
+    {
         await this.TableModel
         .insertMany(tables)
-        .then(function(){
-            console.log('Tables have been populated')
-        }
-        ).catch(function(err:any){
+        .then(function()
+        {
+            console.log("Tables have been populated!")
+        }).catch(function(err: any)
+        {
             console.log(err);
         });
+    }
     }
 
     async addTable(table: Table):Promise<void>
@@ -51,7 +55,7 @@ export class TableRepository
         await this.TableModel
         .create(table)
         .then(function(){
-            console.log("Table"+table.tableNumber+"has been added")}
+            console.log("Table"+table.number+"has been added")}
         ).catch(function(err:any){
             console.log(err);
         });
@@ -60,9 +64,9 @@ export class TableRepository
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
         await this.TableModel
-        .deleteOne({tableNumber: tableNumber})
+        .deleteOne({number: tableNumber})
         .then(function(){
-            console.log("Table"+{tableNumber}+" has been deleted")}
+            console.log("Table"+tableNumber+" has been deleted")}
         ).catch(function(err:any){
             console.log(err);
         });
@@ -70,7 +74,7 @@ export class TableRepository
     async getTableByNumber(tableNumber:number):Promise<Table>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        let table = await this.TableModel.findOne({tableNumber: tableNumber});
+        let table = await this.TableModel.findOne({number: tableNumber});
         if(table)
         {
             
@@ -84,13 +88,13 @@ export class TableRepository
 
             return await this.TableModel.find();
         }
-        async updateTable(table: Table):Promise<void>{
+        async updateTableByNumber(tableNumber:number, table:Table):Promise<void>{
             await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
             await this.TableModel
-            .updateOne({tableNumber: table.tableNumber}, {$set: {status: table.status}})
+            .updateOne({number:tableNumber}, {$set: {status: table.status}})
             .then(function(){
-                console.log("Table"+{tableNumber}+" has been updated")}
+                console.log("Table"+tableNumber+" has been updated")}
             ).catch(function(err:any){
                 console.log(err);
             });
@@ -112,7 +116,7 @@ export class TableRepository
                 let isFree = true;
                 for (let reservation of reservations)
                 {
-                    if (reservation.tableNumber == table.tableNumber)
+                    if (reservation.table.number == table.number)
                     {
                         if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime)
                         {
@@ -139,7 +143,7 @@ export class TableRepository
             let freeTablesWithEnoughSeats: Table[] = [];
             for (let table of freeTables)
             {
-                if (table.seats >= numberOfPeople)
+                if (table.seats >= numberOfPeople && table.status != 3)
                     freeTablesWithEnoughSeats.push(table);
             }
 
