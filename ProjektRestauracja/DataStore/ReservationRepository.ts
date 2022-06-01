@@ -1,14 +1,29 @@
 import {Schema, model, connect} from 'mongoose';
 import Reservation from '../Core/ReservationModel';
+import Table from '../Core/TablesModel';
+import Customer from '../Core/CustomerModel';
 
 export class RestaurantRepository
 {
+    tableSchema = new Schema<Table>(
+       {
+            number: {type: Number, required: true},
+            seats: {type: Number, required: true},
+            status: {type: Number, required: true}
+       });
+    customerSchema = new Schema<Customer>(
+        {
+            name: {type: String, required: true},
+            email: {type: String, required: true},
+            phone: {type: String, required: true}
+        });
+
     reservationSchema = new Schema<Reservation>(
         {
-            table: {type: Schema.Types.ObjectId, ref: 'Table', required: true},
+            table: {type: this.tableSchema, ref: 'Table'},
             startDateTime: {type: Date, required: true},
             endDateTime: {type: Date, required: true},
-            customer: {type: Schema.Types.ObjectId, ref: 'Customer', required: true}
+            customer: {type: this.customerSchema, ref: 'Customer'}
         });
     ReservationModel = model<Reservation>('Reservation', this.reservationSchema);
 
@@ -16,20 +31,41 @@ export class RestaurantRepository
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        const reservations =[
-            {
-                table: '6284ab720b1b925fc9c801fe',
-                startDateTime: new Date(2020, 1, 1, 10, 0, 0),
-                endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                customer: '6282601eb18137f01f157f6f'
-        },{
-            table: '6284ab720b1b925fc9c801ff',
-                startDateTime: new Date(2020, 1, 1, 10, 0, 0),
-                endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                customer: '62826610ec4736a45905ecae'
-        }];
+        const reservations = [{
+                table: 
+                {
+                    number: 1,
+                    seats: 4,
+                    status: 0
+                },
+                startDateTime: new Date(2020, 1, 1, 10, 0, 0, 0),
+                endDateTime: new Date(2020, 1, 1, 11, 0, 0, 0),
+                customer: 
+                {
+                    name: "Customer1",
+                    email: "customer1@gmail.com",
+                    phone: "123456789",
+                    address: "CustomerAddress1"
+                }
+            },{
+                table: 
+                {
+                    number: 2,
+                    seats: 4,
+                    status: 1
+                },
+                startDateTime: new Date(2020, 1, 1, 20, 0, 0, 0),
+                endDateTime: new Date(2020, 1, 1, 21, 0, 0, 0),
+                customer: 
+                {
+                    name: "Customer2",
+                    email: "customer2@gmail.com",
+                    phone: "987654321",
+                    address: "CustomerAddress2"
+                }
+            }
+        ];
 
-        
         if(await this.ReservationModel.countDocuments() === 0)
         {
             await this.ReservationModel
@@ -43,7 +79,6 @@ export class RestaurantRepository
             }); 
         }
     }
-
     async addReservation(reservation: Reservation) : Promise<boolean | string >
     {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
