@@ -5,11 +5,10 @@ export class RestaurantRepository
 {
     reservationSchema = new Schema<Reservation>(
         {
-            reservationId: {type: Number, required: true},
-            tableNumber: {type: Number, required: false},
+            table: {type: Schema.Types.ObjectId, ref: 'Table', required: true},
             startDateTime: {type: Date, required: true},
             endDateTime: {type: Date, required: true},
-            customerId: {type: Number, required: true}
+            customer: {type: Schema.Types.ObjectId, ref: 'Customer', required: true}
         });
     ReservationModel = model<Reservation>('Reservation', this.reservationSchema);
 
@@ -19,82 +18,162 @@ export class RestaurantRepository
 
         const reservations =[
             {
-                reservationId: 1,
-                tableNumber: 1,
+                table: '6284ab720b1b925fc9c801fe',
                 startDateTime: new Date(2020, 1, 1, 10, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                customerId: 1
+                customer: '6282601eb18137f01f157f6f'
         },{
-                reservationId: 2,
-                tableNumber: 2,
+            table: '6284ab720b1b925fc9c801ff',
                 startDateTime: new Date(2020, 1, 1, 10, 0, 0),
                 endDateTime: new Date(2020, 1, 1, 11, 0, 0),
-                customerId: 2
+                customer: '62826610ec4736a45905ecae'
         }];
 
-        await this.ReservationModel
-        .insertMany(reservations)
-        .then(function(){
-            console.log('Reservations have been populated')
+        if(await this.ReservationModel.countDocuments() === 0)
+        {
+            await this.ReservationModel
+            .insertMany(reservations)
+            .then(function()
+            {
+                console.log("Reservation for table " + reservation.table.number + " has been added!");
+        }).catch(function(err: any)
+            {
+                console.log(err);
+            }); 
         }
-        ).catch(function(err:any){
-            console.log(err);
-        });
     }
 
-    async addReservation(reservation: Reservation):Promise<void>{
+    async addReservation(reservation: Reservation) : Promise<boolean | string >
+    {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const alreadyExists = await this.ReservationModel.findOne({
+            'table.number': reservation.table.number,
+            startDateTime: reservation.startDateTime,
+            endDateTime: reservation.endDateTime,
+            'customer.name': reservation.customer.name
+        });
+        if(alreadyExists)
+            return "Such reservation already exists.";
 
         await this.ReservationModel
         .create(reservation)
-        .then(function(){
-            console.log("Reservation"+reservation.reservationId+"has been added")}
-        ).catch(function(err:any){
-            console.log(err);
-        });
-    }
-    async deleteReservationByNumber(reservationId: number):Promise<void>{
-        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        await this.ReservationModel
-        .deleteOne({reservationId: reservationId})
-        .then(function(){
-            console.log("Reservation"+reservationId+"has been deleted")}
-        ).catch(function(err:any){
-            console.log(err);
-        });
-    }
-    async getReservationById(reservationId: number):Promise<Reservation>{
-        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        let reservation = await this.ReservationModel.findOne({reservationId: reservationId});
-        if(reservation)
+        .then(function()
         {
-            return reservation;
-        }else{
-            return null as any;
-        }
-    }
-    async getReservations():Promise<Reservation[]>{
-        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        return await this.ReservationModel.find({});
-
-    }
-    async updateReservation(reservation: Reservation):Promise<void>{
-        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
-
-        await this.ReservationModel
-        .updateOne({reservationId: reservation.reservationId}, reservation)
-        .then(function(){
-            console.log("Reservation"+reservation.reservationId+"has been updated")}
-        ).catch(function(err:any){
+            console.log("Reservation for table " + reservation.table.number + " has been added!");
+        }).catch(function(err: any)
+        {
             console.log(err);
         });
+
+        const exists = await this.ReservationModel.findOne({
+            'table.number': reservation.table.number,
+            startDateTime: reservation.startDateTime,
+            endDateTime: reservation.endDateTime,
+            'customer.name': reservation.customer.name
+        });
+        if(exists)
+            return true;
+        else
+            return "Reservation has not been added.";
     }
-    async getReservationsPerCustomer(customerId: number):Promise<Reservation[]>{
+
+    async deleteReservationById(reservationId: string) : Promise<boolean>
+    {
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
-        return await this.ReservationModel.find({customerId: customerId});
+        const exists = await this.ReservationModel.findById(reservationId);
+        if(!exists)
+            return false;
+
+        await this.ReservationModel
+        .findByIdAndDelete({_id: reservationId})
+        .then(function()
+        {
+            console.log("Reservation " + reservationId + " has been deleted!");
+        }).catch(function(err: any)
+        {
+            console.log(err);
+        });
+
+        const existsAfter = await this.ReservationModel.findById(reservationId);
+        if(!existsAfter)
+            return true;
+        else
+            return false;
+    }
+
+    async getReservationById(reservationId: string) : Promise<Reservation | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const reservation = await this.ReservationModel.findById(reservationId);
+        if(reservation)
+            return reservation;
+        else
+            return false;
+    }
+
+    async getReservations() : Promise<Reservation[] | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const reservations = await this.ReservationModel.find({});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
+    }
+
+    async updateReservationById(reservationId: string, reservation: Reservation) : Promise<boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        let reservationToUpdate = await this.ReservationModel.findById(reservationId);
+        if(reservationToUpdate)
+        {
+            if(reservation.table)
+                reservationToUpdate.table = reservation.table;
+            if(reservation.startDateTime)
+                reservationToUpdate.startDateTime = reservation.startDateTime;
+            if(reservation.endDateTime)
+                reservationToUpdate.endDateTime = reservation.endDateTime;
+            if(reservation.customer)
+                reservationToUpdate.customer = reservation.customer;
+
+            await reservationToUpdate.save().
+            then(function()
+            {
+                console.log("Reservation of ID " + reservationId + " has been updated!");
+            }).catch(function(err: any)
+            {
+                console.log(err);
+            });
+            return true;
+        }
+        else
+            return false;
+    }
+
+    async getReservationsByCustomerName(customerName: string) : Promise<Reservation[] | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const reservations = await this.ReservationModel.find({'customer.name': customerName});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
+    }
+
+    async getReservationsByTableNumber(tableNumber: number) : Promise<Reservation[] | boolean>
+    {
+        await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
+
+        const reservations = await this.ReservationModel.find({'table.number': tableNumber});
+        if(reservations.length > 0)
+            return reservations;
+        else
+            return false;
     }
 }

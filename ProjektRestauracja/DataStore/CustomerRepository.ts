@@ -67,7 +67,7 @@ export class CustomerRepository{
         await this.CustomerModel
         .deleteOne({name: customerName})
         .then(function(){
-            console.log("Customer"+customer.name+" has been deleted")}
+            console.log("Customer"+Customer.name+" has been deleted")}
         ).catch(function(err: any){
             console.log(err);
         });
