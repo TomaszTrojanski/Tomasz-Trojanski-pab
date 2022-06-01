@@ -30,180 +30,838 @@ app.use('/', router);
 const customerRepository = new CustomerRepository();
 const employeeRepository = new EmployeeRepository();
 const menuItemRepository = new MenuItemRepository();
+const orderRepository = new OrderRepository();
 const productRepository = new ProductRepository();
+const productDemandListRepository = new ProductDemandListRepository();
 const reservationRepository = new ReservationRepository();
 const restaurantRepository = new RestaurantRepository();
 const tableRepository = new TableRepository();
+
+// DATABASE POPULATION:
+customerRepository.populateCustomers();
+employeeRepository.populateEmployees();
+menuItemRepository.populateMenuItems();
+orderRepository.populateOrders();
+productRepository.populateProducts();
+reservationRepository.populateReservations();
+restaurantRepository.populateRestaurants();
+tableRepository.populateTables();
+
+// DEMAND LIST POPULATION:
+productDemandListRepository.populateProductDemandList();
+
+
 // REST API for Customer
 // get all customers
-router.get('/customers', async (req: Request, res: Response) => {
-    const customers = await customerRepository.getCustomers();
-    if (customers.length > 0) 
-        res.status(200).json(customers);
-    else if(customers.length === 0)
-        res.status(404).json({message: 'Customers list is empty'});
-    else
-        res.status(404).json({message: 'No customer list found'});
+router.get('/customers', async (_req: Request, res: Response) => {
+    await customerRepository.getCustomers()
+    .then(function(customers: any)
+    {
+        if(customers)
+            res.status(200).send(customers);
+        else
+            res.status(404).send("Customers could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
+
 // get customer by name
 router.get('/customer/:name', async (req: Request, res: Response) => {
-    const customer = await customerRepository.getCustomerByName(req.params.name);
-    if (customer)
-        res.status(200).json(customer);
-    else
-        res.status(404).json({message: 'Customer ' + req.params.name + ' not found'});
+    await customerRepository.getCustomerByName(req.params.name)
+    .then(function(customer: any)
+    {
+        if(customer)
+            res.status(200).send(customer);
+        else
+            res.status(404).send("Customer " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
+
+// add customer from request body
+router.post('/customer', async (req: Request, res: Response) => {
+    const customer = req.body;
+    await customerRepository.addCustomer(customer)
+    .then(function(customerAdded: boolean)
+    {
+        if(customerAdded)
+            res.status(201).send("Customer " + customer.name + " has been successfully added.");
+        else
+            res.status(404).send("Customer " + customer.name + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
 // delete customer by name
 router.delete('/customer/:name', async (req: Request, res: Response) => {
-    const customer = await customerRepository.deleteCustomerByName(req.params.name);
-    res.status(200).json('Restaurant ' + req.params.name + ' deleted');
+    await customerRepository.deleteCustomerByName(req.params.name)
+    .then(function(customerDeleted: boolean)
+    {
+        if(customerDeleted)
+            res.status(200).send("Customer " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Customer " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// add customer from body
-router.post('/customer', async (req: Request, res: Response) => {
-    const customer = await customerRepository.addCustomer(req.body);
-    res.status(200).json(customer);
+
+// update customer from request body
+router.put('/customer/:name', async (req: Request, res: Response) => {
+    await customerRepository.updateCustomer(req.params.name, req.body)
+    .then(function(customerUpdated: boolean)
+    {
+        if(customerUpdated)
+            res.status(200).send("Customer " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Customer " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// update customer from body
-router.put('/customer/', async (req: Request, res: Response) => {
-    const customer = await customerRepository.updateCustomer(req.body);
-    res.status(200).json(customer);
-});
+
 // add loyalty points to customer
 router.put('/customer/:name/:loyaltyPoints', async (req: Request, res: Response) => {
-    const customer = await customerRepository.addLoyaltyPoints(req.params.name, req.params.points);
-    res.status(200).json(customer);
+    await customerRepository.addLoyaltyPoints(req.params.name, +req.params.loyaltyPoints)
+    .then(function(loyaltyPointsAdded: boolean)
+    {
+        if(loyaltyPointsAdded)
+            res.status(200).send(req.params.loyaltyPoints + " loyalty points to " + req.params.name + ".");
+        else
+            res.status(400).send("Customer " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
+
 // REST API for Employee
 // get all employees
-router.get('/employees', async (req: Request, res: Response) => {
-    const employees = await employeeRepository.getEmployees();
-    if (employees.length > 0)
-        res.status(200).json(employees);
-    else if(employees.length === 0)
-        res.status(404).json({message: 'Employees list is empty'});
-    else
-        res.status(404).json({message: 'No employee list found'});
+router.get('/employees', async (_req: Request, res: Response) => {
+    await employeeRepository.getEmployees()
+    .then(function(employees: any)
+    {
+        if(employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees could not be found.");
+    }).catch(function(err)
+    {
+        res.status(500).send(err);
+    });
 });
-// get employee by id
-router.get('/employee/:id', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.getEmployeeById(req.params.id);
-    if (employee)
-        res.status(200).json(employee);
-    else
-        res.status(404).json({message: 'Employee if id: ' + req.params.id + ' not found'});
+
+// get employees by surname
+router.get('/employees/:surname', async (req: Request, res: Response) => {
+    await employeeRepository.getEmployeesBySurname(req.params.surname)
+    .then(function(employees: any)
+    {
+        if(employees)
+            res.status(200).send(employees);
+        else
+            res.status(404).send("Employees of surname " + req.params.surname + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// get employee by name
-router.get('/employee/:name', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.getEmployeeByName(req.params.name);
-    if (employee)
-        res.status(200).json(employee);
-    else
-        res.status(404).json({message: 'Employee ' + req.params.name + ' not found'});
-});
-// delete employee by id
-router.delete('/employee/:id', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.deleteEmployeeById(req.params.id);
-    res.status(200).json('Employee ' + req.params.id + ' deleted');
-});
-// delete employee by name
-router.delete('/employee/:name', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.deleteEmployeeByName(req.params.name);
-    res.status(200).json('Employee ' + req.params.name + ' deleted');
-});
-// add employee from body
+
+// add employee from request body
 router.post('/employee', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.addEmployee(req.body);
-    res.status(200).json(employee);
+    const employee = req.body;
+    await employeeRepository.addEmployee(employee)
+    .then(function(employeeAdded: boolean)
+    {
+        if(employeeAdded)
+            res.status(201).send("Employee " + employee.surname + " " + employee.name + " has been successfully added.");
+        else
+            res.status(400).send("Employee " + employee.surname + " " + employee.name + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// update employee from body
-router.put('/employee/', async (req: Request, res: Response) => {
-    const employee = await employeeRepository.updateEmployee(req.body);
-    res.status(200).json(employee);
+
+// delete employee by surname
+router.delete('/employee/:surname/:name', async (req: Request, res: Response) => {
+    await employeeRepository.deleteEmployeeBySurnameAndName(req.params.surname, req.params.name)
+    .then(function(employeeDeleted: boolean)
+    {
+        if(employeeDeleted)
+            res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+        
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// get employees by restaurant name
-router.get('/employees/:restaurantName', async (req: Request, res: Response) => {
-    const employees = await employeeRepository.getEmployeesByRestaurantName(req.params.restaurantName);
-    if (employees.length > 0)
-        res.status(200).json(employees);
-    else if(employees.length === 0)
-        res.status(404).json({message: 'Employees list is empty'});
-    else
-        res.status(404).json({message: 'No employee list found'});
+
+// update employee from request body
+router.put('/employee/:surname/:name', async (req: Request, res: Response) => {
+    await employeeRepository.updateEmployeeBySurnameAndName(req.params.surname, req.params.name, req.body)
+    .then(function(employeeUpdated: boolean)
+    {
+        if(employeeUpdated)
+            res.status(200).send("Employee " + req.params.surname + " " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Employee " + req.params.surname + " " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// REST API for MenuItem
+
+// REST API for Menu Item
 // get all menu items
-// REST API for Product
+router.get('/menuItems', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenuItems()
+    .then(function(menuItems: any)
+    {
+        if(menuItems)
+            res.status(200).send(menuItems);
+        else
+            res.status(404).send("Menu Items could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get menu item by name
+router.get('/menuItem/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenuItemByName(req.params.name)
+    .then(function(menuItem: any)
+    {
+        if(menuItem)
+            res.status(200).send(menuItem);
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add menu item from request body
+router.post('/menuItem', async (req: Request, res: Response) => {
+    const menuItem = req.body;
+    await menuItemRepository.addMenuItem(menuItem)
+    .then(function(menuItemAdded: boolean)
+    {   
+        if(menuItemAdded)
+            res.status(201).send("Menu Item " + menuItem.name + " has been successfully added.");
+        else
+            res.status(400).send("Menu Item " + menuItem.name + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// delete menu item by name
+router.delete('/menuItem/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.deleteMenuItemByName(req.params.name)
+    .then(function(menuItemDeleted: boolean)
+    {
+        if(menuItemDeleted)
+            res.status(200).send("Menu Item " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update menu item from request body
+router.put('/menuItem/:name', async (req: Request, res: Response) => {
+    await menuItemRepository.updateMenuItem(req.params.name, req.body)
+    .then(function(menuItemUpdated: boolean)
+    {
+        if(menuItemUpdated)
+            res.send("Menu Item " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Menu Item " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get menu grouped by type
+router.get('/menu', async (req: Request, res: Response) => {
+    await menuItemRepository.getMenu()
+    .then(function(menu: any)
+    {
+        res.send(menu);
+    }).catch(function(err: any)
+    {
+        res.send(err);
+    });
+});
+
+// REST API for Order
+// get all orders
+router.get('/orders', async (req: Request, res: Response) => {
+    await orderRepository.getOrders()
+    .then(function(orders: any)
+    {
+        if(orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get order by id
+router.get('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.getOrderById(req.params.id)
+    .then(function(order: any)
+    {
+        if(order)
+            res.status(200).send(order);
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add order from request body
+router.post('/order', async (req: Request, res: Response) => {
+    await orderRepository.addOrder(req.body)
+    .then(function(orderAdded: boolean | string)
+    {
+        if(orderAdded === true)
+            res.status(201).send("Order has been successfully added.");
+        else
+            res.status(400).send(orderAdded);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// delete order by id
+router.delete('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.deleteOrderById(req.params.id)
+    .then(function(orderDeleted: boolean)
+    {
+        if(orderDeleted)
+            res.status(200).send("Order " + req.params.id + " has been successfully deleted.");
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update order from request body
+router.put('/order/:id', async (req: Request, res: Response) => {
+    await orderRepository.updateOrderById(req.params.id, req.body)
+    .then(function(orderUpdated: boolean)
+    {
+        if(orderUpdated)
+            res.send("Order " + req.params.id + " has been successfully updated.");
+        else
+            res.status(404).send("Order " + req.params.id + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get orders by employee name
+router.get('/orders/employee/:name', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByEmployeeName(req.params.name)
+    .then(function(orders: any)
+    {
+        if(orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get orders in a given time period
+router.get('/orders/time/:start/:end', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+    .then(function(orders: any)
+    {
+        if(orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get income in a given time period
+router.get('/income/time/:start/:end', async (req: Request, res: Response) => {
+    await orderRepository.getIncomeByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+    .then(function(income: number)
+    {
+        res.status(200).send(income.toString());
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get profit in a given time period
+router.get('/profit/time/:start/:end', async (req: Request, res: Response) => {
+    await orderRepository.getProfitByTimePeriod(new Date(req.params.start), new Date(req.params.end))
+    .then(function(profit: number)
+    {
+        res.status(200).send(profit.toString());
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get orders by table number
+router.get('/orders/table/:tableNumber', async (req: Request, res: Response) => {
+    await orderRepository.getOrdersByTableNumber(+req.params.tableNumber)
+    .then(function(orders: any)
+    {
+        if(orders)
+            res.status(200).send(orders);
+        else
+            res.status(404).send("Orders could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// REST API for Product in Storage
 // get all products
-router.get('/products', async (req: Request, res: Response) => {
-    const products = await productRepository.getProducts();
-    if (products.length > 0)
-        res.status(200).json(products);
-    else if(products.length === 0)
-        res.status(404).json({message: 'Products list is empty'});
-    else
-        res.status(404).json({message: 'No product list found'});
+router.get('/products', async (_req: Request, res: Response) => {
+    await productRepository.getProducts()
+    .then(function(products: any)
+    {
+        if(products)
+            res.status(200).send(products);
+        else
+            res.status(404).send("Products could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// get product by id
-router.get('/product/:id', async (req: Request, res: Response) => {
-    const product = await productRepository.getProductById(req.params.id);
-    if (product)
-        res.status(200).json(product);
-    else
-        res.status(404).json({message: 'Product if id: ' + req.params.id + ' not found'});
+
+// get product by name
+router.get('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.getProductByName(req.params.name)
+    .then(function(product: any)
+    {
+        if(product)
+            res.status(200).send(product);
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// delete product by id
-router.delete('/product/:id', async (req: Request, res: Response) => {
-    const product = await productRepository.deleteProductById(req.params.id);
-    res.status(200).json('Product ' + req.params.id + ' deleted');
-});
-// add product from body
+
+// add product from request body
 router.post('/product', async (req: Request, res: Response) => {
-    const product = await productRepository.addProduct(req.body);
-    res.status(200).json(product);
+    const product = req.body;
+    await productRepository.addProduct(product)
+    .then(function(productAdded: boolean)
+    {
+        if(productAdded)
+            res.status(201).send("Product " + product.name + " has been successfully added.");
+        else
+            res.status(400).send("Product " + product.name + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
-// update product from body
-router.put('/product/', async (req: Request, res: Response) => {
-    const product = await productRepository.updateProduct(req.body);
-    res.status(200).json(product);
+
+// delete product by name
+router.delete('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.deleteProductByName(req.params.name)
+    .then(function(productDeleted: boolean)
+    {
+        if(productDeleted)
+            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });   
 });
+
+// update product from request body
+router.put('/product/:name', async (req: Request, res: Response) => {
+    await productRepository.updateProductByName(req.params.name, req.body)
+    .then(function(productUpdated: boolean)
+    {
+        if(productUpdated)
+            res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// REST API for Product Demand List
+// get the demand list
+router.get('/demand', async (_req: Request, res: Response) => {
+    await productDemandListRepository.getProductDemandList()
+    .then(function(demandList: any)
+    {
+        if(demandList)
+            res.status(200).send(demandList);
+        else
+            res.status(404).send("Demand List could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get product from demand list by name
+router.get('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.getProductFromDemandListByName(req.params.name)
+    .then(function(product: any)
+    {
+        if(product)
+            res.status(200).send(product);
+        else
+            res.status(404).send("Product " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add product to demand list from request body
+router.post('/demand', async (req: Request, res: Response) => {
+    const product = req.body;
+    await productDemandListRepository.addProductToDemandList(product)
+    .then(function(productAdded: boolean | string)
+    {
+        if(productAdded)
+            res.status(201).send("Product " + product.name + " has been successfully added.");
+        else
+            res.status(400).send(productAdded);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// delete product from demand list by name
+router.delete('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.deleteProductFromDemandListByName(req.params.name)
+    .then(function(productDeleted: boolean | string)
+    {
+        if(productDeleted === true)
+            res.status(200).send("Product " + req.params.name + " has been successfully deleted.");
+        else
+            res.status(404).send(productDeleted);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update product from demand list by name
+router.put('/demand/:name', async (req: Request, res: Response) => {
+    await productDemandListRepository.updateProductInDemandListByName(req.params.name, req.body)
+    .then(function(productUpdated: boolean | string)
+    {
+        if(productUpdated)
+            res.status(200).send("Product " + req.params.name + " has been successfully updated.");
+        else
+            res.status(404).send(productUpdated);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get demand list value
+router.get('/cost/demand', async (_req: Request, res: Response) => {
+    await productDemandListRepository.getDemandListValue()
+    .then(function(demandListValue: number)
+    {
+            res.status(200).send(demandListValue.toString());
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+
+// REST API for Reservation
+// get all reservations
+router.get('/reservations', async (req: Request, res: Response) => {
+    await reservationRepository.getReservations()
+    .then(function(reservations: any)
+    {
+        if(reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+router.get('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationById(req.params.id)
+    .then(function(reservation: any)
+    {
+        if(reservation)
+            res.status(200).send(reservation);
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+        
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add reservation from request body
+router.post('/reservation', async (req: Request, res: Response) => {
+    await reservationRepository.addReservation(req.body)
+    .then(function(reservationAdded: boolean | string)
+    {
+        if(reservationAdded === true)
+            res.status(201).send("Reservation has been successfully added.");
+        else
+            res.status(400).send(reservationAdded);
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// delete reservation by id
+router.delete('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.deleteReservationById(req.params.id)
+    .then(function(reservationDeleted: boolean)
+    {
+        if(reservationDeleted)
+            res.status(200).send("Reservation " + req.params.id + " has been successfully deleted.");
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update reservation from request body
+router.put('/reservation/:id', async (req: Request, res: Response) => {
+    await reservationRepository.updateReservationById(req.params.id, req.body)
+    .then(function(reservationUpdated: boolean)
+    {
+        if(reservationUpdated)
+            res.status(200).send("Reservation " + req.params.id + " has been successfully updated.");
+        else
+            res.status(404).send("Reservation " + req.params.id + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get reservations by customer name
+router.get('/reservations/customer/:name', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationsByCustomerName(req.params.name)
+    .then(function(reservations: any)
+    {
+        if(reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get reservations by table number
+router.get('/reservations/table/:number', async (req: Request, res: Response) => {
+    await reservationRepository.getReservationsByTableNumber(+req.params.number)
+    .then(function(reservations: any)
+    {
+        if(reservations)
+            res.status(200).send(reservations);
+        else
+            res.status(404).send("Reservations could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+
 // REST API for Restaurant
 // get all restaurants
-router.get('/restaurants', async (req: Request, res: Response) => {
-    let restaurants = await restaurantRepository.getRestaurant();
-    if (restaurants.length>0) {
-        res.json(restaurants);
-    } else if (restaurants.length === 0)
-        res.status(200).send('Restaurant list is empty');
-    else
-        res.status(404).send('No restaurants found');
-    }
+router.get('/restaurants', async (_req: Request, res: Response) => {
+    await restaurantRepository.getRestaurants()
+    .then(function(restaurants: any)
+    {
+        if(restaurants)
+            res.status(200).send(restaurants);
+        else
+            res.status(404).send("Restaurants could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
 });
+
 // get restaurant by name
 router.get('/restaurant/:name', async (req: Request, res: Response) => {
-    const restaurant = await restaurantRepository.getRestaurantByName(req.params.name);
-    if (restaurant)
+    await restaurantRepository.getRestaurantByName(req.params.name)
+    .then(function(restaurant: any)
     {
-        res.json(restaurant);
-    }
-    else
+        if(restaurant)
+            res.status(200).send(restaurant);
+        else
+            res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+    }).catch(function(err: any)
     {
-        res.status(404).send('Restaurant not found');
-    }
+        res.status(500).send(err);
+    });
 });
-// delete restaurant by name
-router.delete('/restaurant/:name', async (req: Request, res: Response) => {
-    await restaurantRepository.deleteRestaurantByName(req.params.name);
-    res.status(200).send('Restaurant deleted');
-});
-// add restaurant from body
+
+// add a restaurant from request body
 router.post('/restaurant', async (req: Request, res: Response) => {
     const restaurant = req.body;
-    await restaurantRepository.addRestaurant(restaurant);
-    res.status(200).send('Restaurant added');
+    const restaurantAdded = await restaurantRepository.addRestaurant(restaurant);
+    if (restaurantAdded)
+        res.status(201).send("Restaurant " + restaurant.name + " has been successfully added.");
+    else
+        res.status(400).send("Restaurant " + restaurant.name + " already exists.");
 });
-// update restaurant from body
-router.put('/restaurant/', async (req: Request, res: Response) => {
-    const restaurant = req.body;
-    res.status(200).json(restaurant);
+
+// delete restaurant by name
+router.delete('/restaurant/:name', async (req: Request, res: Response) => {
+    const restaurantDeleted = await restaurantRepository.deleteRestaurantByName(req.params.name);
+    if (restaurantDeleted)
+        res.status(200).send("Restaurant " + req.params.name + " has been successfully deleted.");
+    else
+        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
 });
+
+// update restaurant from request body
+router.put('/restaurant/:name', async (req: Request, res: Response) => {
+    const restaurantUpdated = await restaurantRepository.updateRestaurant(req.params.name, req.body);
+    if (restaurantUpdated)
+        res.status(200).send("Restaurant " + req.params.name + " has been successfully updated.");
+    else 
+        res.status(404).send("Restaurant " + req.params.name + " could not be found.");
+});
+
+// REST API for Table
+// get all tables
+router.get('/tables', async (req: Request, res: Response) => {
+    await tableRepository.getTables()
+    .then(function(tables: any)
+    {
+        if(tables)
+            res.status(200).send(tables);
+        else
+            res.status(404).send("Tables could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// get table by number
+router.get('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.getTableByNumber(+req.params.number)
+    .then(function(table: any)
+    {
+        if(table)
+            res.status(200).send(table);
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// add table from request body
+router.post('/table', async (req: Request, res: Response) => {
+    await tableRepository.addTable(req.body)
+    .then(function(tableAdded: any)
+    {
+        if(tableAdded)
+            res.status(201).send("Table " + req.body.number + " has been successfully added.");
+        else
+            res.status(400).send("Table " + req.body.number + " already exists.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// delete table by number
+router.delete('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.deleteTableByNumber(+req.params.number)
+    .then(function(tableDeleted: any)
+    {
+        if(tableDeleted)
+            res.status(200).send("Table " + req.params.number + " has been successfully deleted.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
+// update table from request body
+router.put('/table/:number', async (req: Request, res: Response) => {
+    await tableRepository.updateTableByNumber(+req.params.number, req.body)
+    .then(function(tableUpdated: any)
+    {
+        if(tableUpdated)
+            res.status(200).send("Table " + req.params.number + " has been successfully updated.");
+        else
+            res.status(404).send("Table " + req.params.number + " could not be found.");
+    }).catch(function(err: any)
+    {
+        res.status(500).send(err);
+    });
+});
+
 app.listen(3000);
