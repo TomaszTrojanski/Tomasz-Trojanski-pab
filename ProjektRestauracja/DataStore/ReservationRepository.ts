@@ -37,7 +37,7 @@ export class RestaurantRepository
         .then(function(){
             console.log('Reservations have been populated')
         }
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -49,7 +49,7 @@ export class RestaurantRepository
         .create(reservation)
         .then(function(){
             console.log("Reservation"+reservation.reservationId+"has been added")}
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -60,7 +60,7 @@ export class RestaurantRepository
         .deleteOne({reservationId: reservationId})
         .then(function(){
             console.log("Reservation"+reservationId+"has been deleted")}
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
@@ -88,11 +88,11 @@ export class RestaurantRepository
         .updateOne({reservationId: reservation.reservationId}, reservation)
         .then(function(){
             console.log("Reservation"+reservation.reservationId+"has been updated")}
-        ).catch(function(err){
+        ).catch(function(err:any){
             console.log(err);
         });
     }
-    async reservationPerCustomer(customerId: number):Promise<Reservation[]>{
+    async getReservationsPerCustomer(customerId: number):Promise<Reservation[]>{
         await connect('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority');
 
         return await this.ReservationModel.find({customerId: customerId});
