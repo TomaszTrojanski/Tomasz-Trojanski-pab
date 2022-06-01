@@ -94,20 +94,33 @@ var TableRepository = /** @class */ (function () {
     };
     TableRepository.prototype.addTable = function (table) {
         return __awaiter(this, void 0, void 0, function () {
+            var alreadyExists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.TableModel.findOne({ number: table.number })];
+                    case 2:
+                        alreadyExists = _a.sent();
+                        if (alreadyExists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.TableModel
                                 .create(table)
                                 .then(function () {
-                                console.log("Table" + table.number + "has been added");
+                                console.log("Table " + table.number + " has been added!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.TableModel.findOne({ number: table.number })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -115,20 +128,33 @@ var TableRepository = /** @class */ (function () {
     };
     TableRepository.prototype.deleteTableByNumber = function (tableNumber) {
         return __awaiter(this, void 0, void 0, function () {
+            var exists, existsAfter;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.TableModel.exists({ number: tableNumber })];
+                    case 2:
+                        exists = _a.sent();
+                        if (!exists)
+                            return [2 /*return*/, false];
                         return [4 /*yield*/, this.TableModel
                                 .deleteOne({ number: tableNumber })
                                 .then(function () {
-                                console.log("Table" + tableNumber + " has been deleted");
+                                console.log("Table " + tableNumber + " has been deleted!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
+                        return [4 /*yield*/, this.TableModel.exists({ number: tableNumber })];
+                    case 4:
+                        existsAfter = _a.sent();
+                        if (!existsAfter)
+                            return [2 /*return*/, true];
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
@@ -145,97 +171,64 @@ var TableRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.TableModel.findOne({ number: tableNumber })];
                     case 2:
                         table = _a.sent();
-                        if (table) {
+                        if (table)
                             return [2 /*return*/, table];
-                        }
-                        else {
-                            return [2 /*return*/, null];
-                        }
+                        else
+                            return [2 /*return*/, false];
                         return [2 /*return*/];
                 }
             });
         });
     };
-    TableRepository.prototype.getTable = function (table) {
+    TableRepository.prototype.getTables = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var tables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
-                        return [4 /*yield*/, this.TableModel.find()];
-                    case 2: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, this.TableModel.find({})];
+                    case 2:
+                        tables = _a.sent();
+                        if (tables.length > 0)
+                            return [2 /*return*/, tables];
+                        else
+                            return [2 /*return*/, false];
+                        return [2 /*return*/];
                 }
             });
         });
     };
     TableRepository.prototype.updateTableByNumber = function (tableNumber, table) {
         return __awaiter(this, void 0, void 0, function () {
+            var tableToUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
                     case 1:
                         _a.sent();
+                        return [4 /*yield*/, this.TableModel.findOne({ number: tableNumber })];
+                    case 2:
+                        tableToUpdate = _a.sent();
+                        if (!tableToUpdate) return [3 /*break*/, 4];
+                        if (table.number)
+                            tableToUpdate.number = table.number;
+                        if (table.seats)
+                            tableToUpdate.seats = table.seats;
+                        if (table.status)
+                            tableToUpdate.status = table.status;
                         return [4 /*yield*/, this.TableModel
-                                .updateOne({ number: tableNumber }, { $set: { status: table.status } })
+                                .updateOne({ number: tableNumber }, tableToUpdate)
                                 .then(function () {
-                                console.log("Table" + tableNumber + " has been updated");
+                                console.log("Table " + tableNumber + " has been updated!");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
-                    case 2:
-                        _a.sent();
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    TableRepository.prototype.getFreeTables = function (startDateTime, endDateTime) {
-        return __awaiter(this, void 0, void 0, function () {
-            var reservationRepository, reservations, tables, freeTables, _i, tables_1, table, isFree, _a, reservations_1, reservation, freeTablesWithEnoughSeats, _b, freeTables_1, table;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0: return [4 /*yield*/, (0, mongoose_1.connect)('mongodb+srv://Admin:<AdminAdmin>@cluster0.tpgqv.mongodb.net/?retryWrites=true&w=majority')];
-                    case 1:
-                        _c.sent();
-                        reservationRepository = new reservationRepository();
-                        return [4 /*yield*/, reservationRepository.getReservations()];
-                    case 2:
-                        reservations = _c.sent();
-                        return [4 /*yield*/, this.getTables()];
                     case 3:
-                        tables = _c.sent();
-                        freeTables = [];
-                        for (_i = 0, tables_1 = tables; _i < tables_1.length; _i++) {
-                            table = tables_1[_i];
-                            isFree = true;
-                            for (_a = 0, reservations_1 = reservations; _a < reservations_1.length; _a++) {
-                                reservation = reservations_1[_a];
-                                if (reservation.table.number == table.number) {
-                                    if (reservation.startDateTime <= startDateTime && reservation.endDateTime >= endDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                    else if (reservation.startDateTime <= startDateTime && reservation.startDateTime >= endDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                    else if (reservation.endDateTime <= endDateTime && reservation.endDateTime >= startDateTime) {
-                                        isFree = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (isFree)
-                                freeTables.push(table);
-                        }
-                        freeTablesWithEnoughSeats = [];
-                        for (_b = 0, freeTables_1 = freeTables; _b < freeTables_1.length; _b++) {
-                            table = freeTables_1[_b];
-                            if (table.seats >= numberOfPeople && table.status != 3)
-                                freeTablesWithEnoughSeats.push(table);
-                        }
-                        return [2 /*return*/, freeTablesWithEnoughSeats];
+                        _a.sent();
+                        return [2 /*return*/, true];
+                    case 4: return [2 /*return*/, false];
                 }
             });
         });

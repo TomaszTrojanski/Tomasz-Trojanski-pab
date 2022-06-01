@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.CustomerRepository = void 0;
 var mongoose_1 = require("mongoose");
+var CustomerModel_1 = require("../Core/CustomerModel");
 var CustomerRepository = /** @class */ (function () {
     function CustomerRepository() {
         this.customerSchema = new mongoose_1.Schema({
@@ -122,7 +123,7 @@ var CustomerRepository = /** @class */ (function () {
                         return [4 /*yield*/, this.CustomerModel
                                 .deleteOne({ name: customerName })
                                 .then(function () {
-                                console.log("Customer" + customer.name + " has been deleted");
+                                console.log("Customer" + CustomerModel_1["default"].name + " has been deleted");
                             })["catch"](function (err) {
                                 console.log(err);
                             })];
